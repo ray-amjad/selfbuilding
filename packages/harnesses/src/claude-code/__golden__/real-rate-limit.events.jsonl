@@ -1,0 +1,6 @@
+{"mcp":[{"name":"selfbuilding","status":"connected"}],"model":"claude-offline-test","sessionId":"<session:1>","tools":["Task","Bash","CronCreate","CronDelete","CronList","Edit","EnterWorktree","ExitWorktree","ListAgents","Monitor","NotebookEdit","Read","ReportFindings","ScheduleWakeup","SendMessage","Skill","TaskStop","ToolSearch","WebFetch","WebSearch","Workflow","Write","mcp__selfbuilding__submit_result"],"type":"session.started"}
+{"attempt":1,"cause":"rate_limit","delayMs":555,"type":"retry"}
+{"attempt":2,"cause":"rate_limit","delayMs":1084,"type":"retry"}
+{"cachedInputTokens":0,"costUsd":"<usd>","cumulative":true,"inputTokens":0,"outputTokens":0,"type":"usage"}
+{"failure":{"code":"rate_limit","message":"API Error: Request rejected (429) · Rate limited","retryable":true},"type":"error"}
+{"reason":"error","type":"turn.ended"}

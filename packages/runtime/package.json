@@ -1,0 +1,52 @@
+{
+  "name": "@selfbuilding/runtime",
+  "version": "0.1.0",
+  "description": "The in-sandbox runtime and the selfbuilding-mcp tool server, shipped as bundled files.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "sandbox",
+    "runtime",
+    "mcp"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/runtime#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/runtime"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    },
+    "./selfbuilding-runtime.mjs": "./dist/selfbuilding-runtime.mjs",
+    "./selfbuilding-mcp.mjs": "./dist/selfbuilding-mcp.mjs",
+    "./ns-reap.mjs": "./dist/ns-reap.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@selfbuilding/core": "workspace:*",
+    "@selfbuilding/harnesses": "workspace:*",
+    "@selfbuilding/hooks": "workspace:*",
+    "@selfbuilding/testing": "workspace:*"
+  }
+}

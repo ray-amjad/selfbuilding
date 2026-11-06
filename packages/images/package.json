@@ -1,0 +1,46 @@
+{
+  "name": "@selfbuilding/images",
+  "version": "0.1.0",
+  "description": "defineImage and the official image definitions.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "docker",
+    "sandbox",
+    "image"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/images#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/images"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "docker"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*"
+  }
+}

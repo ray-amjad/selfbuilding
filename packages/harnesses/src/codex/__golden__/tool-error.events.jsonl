@@ -1,0 +1,12 @@
+{"sessionId":"<session:1>","type":"session.started"}
+{"callId":"item_0","effect":"effect","input":{"command":"bash -lc 'pnpm test'"},"name":"command_execution","source":"builtin","summary":"bash -lc 'pnpm test'","type":"tool.started"}
+{"callId":"item_0","name":"command_execution","ok":false,"output":"FAIL src/app.test.ts\n1 failed\n","type":"tool.completed"}
+{"callId":"item_1","effect":"effect","input":{"body":"hi"},"name":"create_comment","server":"github","source":"mcp","summary":"create_comment","type":"tool.started"}
+{"callId":"item_1","name":"create_comment","ok":false,"output":"MCP tool call requires approval, but approval policy is never","type":"tool.completed"}
+{"callId":"item_2","effect":"read","input":{"status":"bogus"},"name":"submit_result","server":"selfbuilding","source":"mcp","summary":"submit_result","type":"tool.started"}
+{"callId":"item_2","name":"submit_result","ok":false,"output":"status: must be \"done\"","type":"tool.completed"}
+{"callId":"item_3","effect":"effect","input":{"changes":[{"kind":"delete","path":"/selfbuilding/work/README.md"}]},"name":"file_change","source":"builtin","summary":"/selfbuilding/work/README.md","type":"tool.started"}
+{"callId":"item_3","name":"file_change","ok":false,"type":"tool.completed"}
+{"role":"assistant","text":"The tests fail; stopping.","type":"message"}
+{"cachedInputTokens":0,"cumulative":false,"inputTokens":9001,"outputTokens":311,"type":"usage"}
+{"reason":"end_turn","type":"turn.ended"}

@@ -1,0 +1,52 @@
+{
+  "name": "@selfbuilding/script",
+  "version": "0.1.0",
+  "description": "runScript: agent-written workflow scripts in a QuickJS (WASM) isolate that exposes only the primitives.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "workflow",
+    "quickjs",
+    "sandbox"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/script#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/script"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/agents": "workspace:*",
+    "@selfbuilding/core": "workspace:*",
+    "@selfbuilding/harnesses": "workspace:*",
+    "quickjs-emscripten": "^0.32.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@selfbuilding/testing": "workspace:*"
+  }
+}

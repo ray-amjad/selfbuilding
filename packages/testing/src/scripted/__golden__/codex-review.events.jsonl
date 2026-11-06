@@ -1,0 +1,8 @@
+{"sessionId":"<session:1>","type":"session.started"}
+{"role":"assistant","text":"Reviewing.","type":"message"}
+{"callId":"item_2","effect":"effect","input":{"command":"git status --short"},"name":"command_execution","source":"builtin","summary":"git status --short","type":"tool.started"}
+{"callId":"item_2","name":"command_execution","ok":true,"output":"","type":"tool.completed"}
+{"callId":"item_3","effect":"read","input":{"status":"done"},"name":"submit_result","server":"selfbuilding","source":"mcp","summary":"submit_result","type":"tool.started"}
+{"callId":"item_3","name":"submit_result","ok":true,"output":"Accepted. Stop now.","type":"tool.completed"}
+{"cachedInputTokens":0,"cumulative":false,"inputTokens":300,"outputTokens":60,"type":"usage"}
+{"reason":"end_turn","type":"turn.ended"}

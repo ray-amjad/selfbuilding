@@ -1,0 +1,5 @@
+{"type":"thread.started","thread_id":"0199a219-1234-7abc-8def-0123456789ab"}
+{"type":"turn.started"}
+{"type":"item.started","item":{"id":"item_0","type":"mcp_tool_call","server":"selfbuilding","tool":"submit_result","arguments":{"status":"done"},"result":null,"error":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_0","type":"mcp_tool_call","server":"selfbuilding","tool":"submit_result","arguments":{"status":"done"},"result":{"content":[{"type":"text","text":"Accepted. Stop now."}],"structured_content":null},"error":null,"status":"completed"}}
+{"type":"item.started","item":{"id":"item_1","type":"command_execution","command":"bash -lc 'git push'","aggregated_output":"","exit_code":null,"status":"in_progress"}}

@@ -1,0 +1,11 @@
+@selfbuilding/agents
+Copyright (c) 2026 Ray Amjad. Licensed under the MIT License (see LICENSE).
+
+Third-party text
+
+The review prompt bodies in skills/code-review/references/medium.md and
+skills/code-review/references/high.md (everything below the first "---" rule in
+each file) are reproduced verbatim from the code review prompts that Anthropic
+ships with Claude Code. They are Anthropic's work, credited here, and are not
+covered by this package's MIT license. All other files in this package are
+covered by the MIT license.

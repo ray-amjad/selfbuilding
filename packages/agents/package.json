@@ -1,0 +1,59 @@
+{
+  "name": "@selfbuilding/agents",
+  "version": "0.1.0",
+  "description": "The built-in agents (ImplementSpec, CodeReview, Verify) and the shipChange factory.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "agents",
+    "code-review",
+    "coding-agent"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/agents#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/agents"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./contracts": {
+      "types": "./dist/contracts.d.ts",
+      "import": "./dist/contracts.js"
+    },
+    "./skills/*": "./skills/*"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "NOTICE"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*",
+    "@selfbuilding/harnesses": "workspace:*",
+    "@selfbuilding/skills": "workspace:*",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@selfbuilding/images": "workspace:*",
+    "@selfbuilding/testing": "workspace:*"
+  }
+}

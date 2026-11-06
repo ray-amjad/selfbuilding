@@ -1,0 +1,5 @@
+{"sessionId":"<session:1>","type":"session.started"}
+{"attempt":1,"cause":"stream disconnected before completion: error sending request for url (https://chatgpt.com/backend-api/codex/responses)","type":"retry"}
+{"attempt":2,"cause":"stream disconnected before completion: error sending request for url (https://chatgpt.com/backend-api/codex/responses)","type":"retry"}
+{"failure":{"code":"provider","message":"exceeded retry limit, last status: 503 Service Unavailable","retryable":true},"type":"error"}
+{"reason":"error","type":"turn.ended"}

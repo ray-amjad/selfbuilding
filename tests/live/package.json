@@ -1,0 +1,38 @@
+{
+  "name": "@selfbuilding/live",
+  "version": "0.0.0",
+  "description": "The live acceptance suite: real sandboxes, harnesses, GitHub and Slack. Skips unless its environment is set (see README.md).",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@impello/sdk": "^0.3.1",
+    "@selfbuilding/agents": "workspace:*",
+    "@selfbuilding/artifacts-s3": "workspace:*",
+    "@selfbuilding/channel-github": "workspace:*",
+    "@selfbuilding/channel-slack": "workspace:*",
+    "@selfbuilding/core": "workspace:*",
+    "@selfbuilding/harnesses": "workspace:*",
+    "@selfbuilding/hooks": "workspace:*",
+    "@selfbuilding/images": "workspace:*",
+    "@selfbuilding/host-trigger": "workspace:*",
+    "@selfbuilding/runtime": "workspace:*",
+    "@selfbuilding/sandbox-conformance": "workspace:*",
+    "@selfbuilding/sandbox-docker": "workspace:*",
+    "@selfbuilding/sandbox-e2b": "workspace:*",
+    "@selfbuilding/sandbox-impello": "workspace:*",
+    "@selfbuilding/script": "workspace:*",
+    "@selfbuilding/testing": "workspace:*",
+    "@trigger.dev/sdk": "^4.4.2",
+    "e2b": "^2.62.0",
+    "selfbuilding": "workspace:*",
+    "zod": "^4.1.0"
+  }
+}

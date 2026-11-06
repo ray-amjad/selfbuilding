@@ -1,0 +1,10 @@
+{"mcp":[{"name":"selfbuilding","status":"connected"}],"model":"scripted","sessionId":"<session:1>","tools":["Bash","Read","Edit","Write","mcp__selfbuilding__submit_result"],"type":"session.started"}
+{"role":"assistant","text":"Implementing.","type":"message"}
+{"callId":"toolu_0002","effect":"effect","input":{"command":"echo 'export const y = 2;' > y.ts && git add y.ts","description":"scripted shell step"},"name":"Bash","source":"builtin","summary":"echo 'export const y = 2;' > y.ts && git add y.ts","type":"tool.started"}
+{"callId":"toolu_0002","name":"Bash","ok":true,"output":"","type":"tool.completed"}
+{"callId":"toolu_0003","effect":"read","input":{"status":"bogus"},"name":"mcp__selfbuilding__submit_result","server":"selfbuilding","source":"mcp","summary":"mcp__selfbuilding__submit_result","type":"tool.started"}
+{"callId":"toolu_0003","name":"mcp__selfbuilding__submit_result","ok":false,"output":"status: must be \"done\"","type":"tool.completed"}
+{"callId":"toolu_0004","effect":"read","input":{"status":"done","summary":"ok"},"name":"mcp__selfbuilding__submit_result","server":"selfbuilding","source":"mcp","summary":"mcp__selfbuilding__submit_result","type":"tool.started"}
+{"callId":"toolu_0004","name":"mcp__selfbuilding__submit_result","ok":true,"output":"Accepted. Stop now.","type":"tool.completed"}
+{"cachedInputTokens":0,"costUsd":"<usd>","cumulative":true,"inputTokens":400,"outputTokens":80,"type":"usage"}
+{"reason":"end_turn","type":"turn.ended"}

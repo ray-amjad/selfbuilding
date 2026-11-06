@@ -1,0 +1,5 @@
+# Known, reviewed exceptions to scripts/check-public.mjs: path-glob<TAB>rule<TAB>reason.
+# The rule is a glob as well. `node scripts/check-public.mjs --strict` ignores this file.
+docs/spec/selfbuilding-v1-spec.md	slack-id	made-up approver id in a config example
+packages/channel-slack/src/blocks.test.ts	slack-id	made-up user id in the mention test
+packages/runtime/src/units.test.ts	anthropic-key	made-up key the redaction test must mask

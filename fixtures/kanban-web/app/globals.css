@@ -1,0 +1,101 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, sans-serif;
+  color: #1d1d1f;
+  background: #f6f6f4;
+}
+
+main {
+  max-width: 64rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.flash,
+.error {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.flash {
+  background: #e3f4e6;
+  color: #1b5e20;
+}
+
+.error {
+  background: #fde8e8;
+  color: #8a1c1c;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.column {
+  padding: 0.75rem;
+  background: #ebebe7;
+  border-radius: 8px;
+}
+
+.column h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+}
+
+.count {
+  color: #666;
+  font-weight: normal;
+}
+
+.card-form {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.card-form label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.card-form input,
+.card-form textarea,
+.card-form button,
+.card button {
+  font: inherit;
+  padding: 0.35rem 0.5rem;
+}
+
+.card-form button {
+  justify-self: start;
+}
+
+.card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.card {
+  padding: 0.6rem 0.75rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.card-description {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+
+.empty {
+  color: #666;
+  font-size: 0.9rem;
+}

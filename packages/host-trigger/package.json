@@ -1,0 +1,53 @@
+{
+  "name": "@selfbuilding/host-trigger",
+  "version": "0.1.0",
+  "description": "Trigger.dev v4 durable host.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "trigger.dev",
+    "durable-execution",
+    "workflow"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/host-trigger#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/host-trigger"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@trigger.dev/sdk": "^4.4.2"
+  },
+  "devDependencies": {
+    "@trigger.dev/sdk": "^4.4.2",
+    "@selfbuilding/testing": "workspace:*",
+    "zod": "^4.1.0"
+  }
+}

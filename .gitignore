@@ -1,0 +1,19 @@
+node_modules/
+dist/
+coverage/
+.selfbuilding/journal/
+.selfbuilding/artifacts/
+.env
+.env.*
+!.env.example
+.claude/worktrees/
+.claude/settings.local.json
+ref/
+*.log
+.DS_Store
+
+# Local package tarballs (README: install a local build)
+.packs/
+
+# Local secret-manager pointer (has a private hostname); see .infisical.example.json
+.infisical.json

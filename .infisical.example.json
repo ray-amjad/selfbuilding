@@ -1,0 +1,6 @@
+{
+  "workspaceId": "<your-infisical-project-id>",
+  "defaultEnvironment": "dev",
+  "gitBranchToEnvironmentMapping": null,
+  "domain": "https://<your-infisical-host>/api"
+}

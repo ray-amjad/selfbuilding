@@ -1,0 +1,43 @@
+# Publishes every package when a version tag is pushed. Provenance needs the OIDC token and a public repository.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm check
+      - run: node scripts/check-public.mjs
+      - name: Check the tag matches the package version
+        run: |
+          version="$(node -p "require('./packages/core/package.json').version")"
+          test "v$version" = "$GITHUB_REF_NAME"
+      - name: Publish, leaves first
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for name in $(node scripts/publish-order.mjs); do
+            version="$(pnpm --filter "$name" exec node -p "require('./package.json').version")"
+            # A re-run after a partial failure skips what already went out.
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "skip $name@$version"
+              continue
+            fi
+            pnpm --filter "$name" publish --access public --no-git-checks
+          done

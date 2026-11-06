@@ -1,0 +1,5 @@
+{"mcp":[{"name":"selfbuilding","status":"connected"}],"model":"claude-test","sessionId":"<session:1>","tools":["Bash","mcp__selfbuilding__submit_result"],"type":"session.started"}
+{"attempt":1,"cause":"provider","delayMs":600,"type":"retry"}
+{"cachedInputTokens":0,"costUsd":"<usd>","cumulative":true,"inputTokens":0,"outputTokens":0,"type":"usage"}
+{"failure":{"code":"context_overflow","message":"API Error: 400 prompt is too long: 210000 tokens > 200000 maximum","retryable":false},"type":"error"}
+{"reason":"error","type":"turn.ended"}

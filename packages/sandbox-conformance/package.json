@@ -1,0 +1,51 @@
+{
+  "name": "@selfbuilding/sandbox-conformance",
+  "version": "0.1.0",
+  "description": "describeSandboxProvider() and the placement suite.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "sandbox",
+    "conformance",
+    "vitest"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/sandbox-conformance#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/sandbox-conformance"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "vitest": ">=4"
+  },
+  "devDependencies": {
+    "@selfbuilding/testing": "workspace:*"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "name": "@selfbuilding/sandbox-e2b",
+  "version": "0.1.0",
+  "description": "E2B sandbox provider and the shared E2B-shape adapter.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "e2b",
+    "sandbox"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/sandbox-e2b#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/sandbox-e2b"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./adapter": {
+      "types": "./dist/shared.d.ts",
+      "import": "./dist/adapter.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*",
+    "e2b": "^2.62.0",
+    "@selfbuilding/images": "workspace:*"
+  },
+  "devDependencies": {
+    "@selfbuilding/sandbox-conformance": "workspace:*",
+    "@selfbuilding/testing": "workspace:*"
+  }
+}

@@ -1,0 +1,6 @@
+{"sessionId":"<session:1>","type":"session.started"}
+{"role":"assistant","text":"Continuing from where I stopped; the push already happened.","type":"message"}
+{"callId":"item_1","effect":"read","input":{"status":"done"},"name":"submit_result","server":"selfbuilding","source":"mcp","summary":"submit_result","type":"tool.started"}
+{"callId":"item_1","name":"submit_result","ok":true,"output":"Accepted. Stop now.","type":"tool.completed"}
+{"cachedInputTokens":29800,"cumulative":false,"inputTokens":30500,"outputTokens":90,"type":"usage"}
+{"reason":"end_turn","type":"turn.ended"}

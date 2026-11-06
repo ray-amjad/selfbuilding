@@ -1,0 +1,51 @@
+{
+  "name": "@selfbuilding/sandbox-docker",
+  "version": "0.1.0",
+  "description": "Docker sandbox provider.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "docker",
+    "sandbox"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/sandbox-docker#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/sandbox-docker"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*",
+    "dockerode": "^5.0.1",
+    "@selfbuilding/images": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/dockerode": "^4.0.2",
+    "@selfbuilding/sandbox-conformance": "workspace:*",
+    "@selfbuilding/testing": "workspace:*"
+  }
+}

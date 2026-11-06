@@ -1,0 +1,6 @@
+{"sessionId":"<session:1>","type":"session.started"}
+{"failure":{"code":"harness_crash","message":"MCP client for `selfbuilding` failed to start: No such file or directory (os error 2)","retryable":false},"type":"error"}
+{"message":"MCP client for `docs` failed to start: request timed out","type":"warning"}
+{"role":"assistant","text":"I cannot find submit_result.","type":"message"}
+{"cachedInputTokens":0,"cumulative":false,"inputTokens":1200,"outputTokens":20,"type":"usage"}
+{"reason":"end_turn","type":"turn.ended"}

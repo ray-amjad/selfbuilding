@@ -1,0 +1,3 @@
+{"sessionId":"<session:1>","type":"session.started"}
+{"failure":{"code":"invalid_request","message":"The 'gpt-unknown' model is not supported when using Codex with a ChatGPT account.","retryable":false},"type":"error"}
+{"reason":"error","type":"turn.ended"}

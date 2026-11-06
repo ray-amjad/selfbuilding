@@ -1,0 +1,60 @@
+{
+  "name": "@selfbuilding/harnesses",
+  "version": "0.1.0",
+  "description": "Harness adapters: command builders and stream parsers.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "claude-code",
+    "codex",
+    "harness"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/harnesses#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/harnesses"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    "./claude-code": {
+      "types": "./dist/claude-code/index.d.ts",
+      "import": "./dist/claude-code/index.js"
+    },
+    "./codex": {
+      "types": "./dist/codex/index.d.ts",
+      "import": "./dist/codex/index.js"
+    },
+    "./claude-code/parser": {
+      "types": "./dist/claude-code/parser.d.ts",
+      "import": "./dist/claude-code/parser.js"
+    },
+    "./codex/parser": {
+      "types": "./dist/codex/parser.d.ts",
+      "import": "./dist/codex/parser.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@selfbuilding/testing": "workspace:*"
+  }
+}

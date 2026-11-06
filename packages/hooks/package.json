@@ -1,0 +1,49 @@
+{
+  "name": "@selfbuilding/hooks",
+  "version": "0.1.0",
+  "description": "Fetch handlers for channel webhooks and sandbox callbacks.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "webhooks",
+    "fetch-handler",
+    "human-in-the-loop"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/hooks#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/hooks"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@selfbuilding/testing": "workspace:*",
+    "@selfbuilding/channel-slack": "workspace:*"
+  }
+}

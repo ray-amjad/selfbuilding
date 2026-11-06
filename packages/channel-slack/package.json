@@ -1,0 +1,49 @@
+{
+  "name": "@selfbuilding/channel-slack",
+  "version": "0.1.0",
+  "description": "Slack HITL channel.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "slack",
+    "human-in-the-loop"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/channel-slack#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/channel-slack"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./slack-app-manifest.json": "./slack-app-manifest.json"
+  },
+  "files": [
+    "dist",
+    "slack-app-manifest.json"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@selfbuilding/testing": "workspace:*"
+  }
+}

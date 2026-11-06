@@ -1,0 +1,61 @@
+{
+  "name": "selfbuilding",
+  "version": "0.1.0",
+  "description": "The selfbuilding CLI.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "cli",
+    "sandbox",
+    "workflow",
+    "coding-agent"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/cli#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/cli"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "bin": {
+    "selfbuilding": "./dist/cli.js"
+  },
+  "exports": {
+    "./launcher": {
+      "types": "./dist/launcher-entry.d.ts",
+      "import": "./dist/launcher.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*",
+    "@selfbuilding/images": "workspace:*",
+    "@selfbuilding/runtime": "workspace:*",
+    "@selfbuilding/sandbox-docker": "workspace:*",
+    "@selfbuilding/sandbox-e2b": "workspace:*",
+    "@selfbuilding/sandbox-impello": "workspace:*",
+    "@selfbuilding/script": "workspace:*",
+    "jiti": "^2.7.0"
+  },
+  "devDependencies": {
+    "@selfbuilding/testing": "workspace:*",
+    "zod": "^4.1.0"
+  }
+}

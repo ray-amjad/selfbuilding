@@ -1,0 +1,38 @@
+diff --git a/web/app/actions.ts b/web/app/actions.ts
+index e333a81..c46c2aa 100644
+--- a/web/app/actions.ts
++++ b/web/app/actions.ts
+@@ -7,6 +7,10 @@ export async function addNoteAction(formData: FormData): Promise<void> {
+   const input = validateNote({ title: formData.get("title"), body: formData.get("body") });
+   if (!input.ok) redirect(`/?error=${encodeURIComponent(input.error)}`);
+   const db = getDb();
+-  const id = withTransaction(db, () => addNote(db, input));
+-  redirect(`/?added=${id}`);
++  withTransaction(db, () => {
++    const id = addNote(db, input);
++    // Carry the note in the URL so the page can show it straight away, before the list query catches up.
++    const query = new URLSearchParams({ added: String(id), title: input.title, body: input.body });
++    redirect(`/?${query}`);
++  });
+ }
+diff --git a/web/app/page.tsx b/web/app/page.tsx
+index aa4a845..e0b50ea 100644
+--- a/web/app/page.tsx
++++ b/web/app/page.tsx
+@@ -14,6 +14,16 @@ export default async function NotesPage({ searchParams }: { searchParams: Promis
+   const added = first(params.added);
+   const error = first(params.error);
+   const notes = listNotes(getDb());
++  const addedTitle = first(params.title);
++  if (added && addedTitle && !notes.some((note) => note.id === Number(added))) {
++    notes.unshift({
++      id: Number(added),
++      title: addedTitle,
++      body: first(params.body) ?? "",
++      done: false,
++      createdAt: new Date().toISOString(),
++    });
++  }
+ 
+   return (
+     <main>

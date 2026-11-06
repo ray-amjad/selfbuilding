@@ -1,0 +1,4 @@
+{"mcp":[{"name":"selfbuilding","status":"connected"}],"model":"claude-offline-test","sessionId":"<session:1>","tools":["Task","Bash","CronCreate","CronDelete","CronList","Edit","EnterWorktree","ExitWorktree","ListAgents","Monitor","NotebookEdit","Read","ReportFindings","ScheduleWakeup","SendMessage","Skill","TaskStop","ToolSearch","WebFetch","WebSearch","Workflow","Write","mcp__selfbuilding__submit_result"],"type":"session.started"}
+{"callId":"toolu_fake_9","effect":"effect","input":{"command":"true","description":"noop"},"name":"Bash","source":"builtin","summary":"Bash: true","type":"tool.started"}
+{"cachedInputTokens":0,"costUsd":"<usd>","cumulative":true,"inputTokens":0,"outputTokens":0,"type":"usage"}
+{"reason":"budget","type":"turn.ended"}

@@ -1,0 +1,53 @@
+# Offline checks only: build, lint, typecheck, tests and the public-tree scan. No secrets, no live or Docker tests
+# (docs/spec/release-prep.md §6.1).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: check (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - name: Refuse live and Docker test switches
+        run: |
+          if env | grep -qE '^(SELFBUILDING_LIVE[A-Z0-9_]*|SELFBUILDING_E2E_DOCKER)='; then
+            echo "::error::SELFBUILDING_LIVE* or SELFBUILDING_E2E_DOCKER is set; CI runs offline tests only."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      # No version input: the action reads it from the root package.json `packageManager` field.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm check
+
+      - name: Public-tree scan self-test
+        run: node scripts/check-public.mjs --self-test
+      - name: Public-tree scan
+        run: node scripts/check-public.mjs
+      - name: Publish order
+        run: node scripts/publish-order.mjs

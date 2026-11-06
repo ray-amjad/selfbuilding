@@ -1,0 +1,46 @@
+{
+  "name": "@selfbuilding/testing",
+  "version": "0.1.0",
+  "description": "scriptedHarness, tmpdirProvider and emulator setup for offline tests.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "testing",
+    "offline",
+    "sandbox"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/testing#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/testing"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*",
+    "emulate": "0.13.0"
+  }
+}

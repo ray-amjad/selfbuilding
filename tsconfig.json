@@ -1,0 +1,23 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/skills" },
+    { "path": "packages/core" },
+    { "path": "packages/agents" },
+    { "path": "packages/harnesses" },
+    { "path": "packages/runtime" },
+    { "path": "packages/images" },
+    { "path": "packages/testing" },
+    { "path": "packages/sandbox-conformance" },
+    { "path": "packages/sandbox-docker" },
+    { "path": "packages/sandbox-e2b" },
+    { "path": "packages/sandbox-impello" },
+    { "path": "packages/host-trigger" },
+    { "path": "packages/channel-slack" },
+    { "path": "packages/channel-github" },
+    { "path": "packages/hooks" },
+    { "path": "packages/artifacts-s3" },
+    { "path": "packages/script" },
+    { "path": "packages/cli" }
+  ]
+}

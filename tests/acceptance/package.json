@@ -1,0 +1,33 @@
+{
+  "name": "@selfbuilding/acceptance",
+  "version": "0.0.0",
+  "description": "The offline acceptance suite of the basic build (docs/BASIC-SCOPE.md).",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@selfbuilding/agents": "workspace:*",
+    "@selfbuilding/artifacts-s3": "workspace:*",
+    "@selfbuilding/channel-github": "workspace:*",
+    "@selfbuilding/channel-slack": "workspace:*",
+    "@selfbuilding/core": "workspace:*",
+    "@selfbuilding/harnesses": "workspace:*",
+    "@selfbuilding/hooks": "workspace:*",
+    "@selfbuilding/host-trigger": "workspace:*",
+    "@selfbuilding/runtime": "workspace:*",
+    "@selfbuilding/sandbox-conformance": "workspace:*",
+    "@selfbuilding/sandbox-docker": "workspace:*",
+    "@selfbuilding/sandbox-e2b": "workspace:*",
+    "@selfbuilding/sandbox-impello": "workspace:*",
+    "@selfbuilding/script": "workspace:*",
+    "@selfbuilding/testing": "workspace:*",
+    "zod": "^4.1.0"
+  }
+}

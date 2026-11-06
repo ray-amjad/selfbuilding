@@ -1,0 +1,8 @@
+{"mcp":[{"name":"selfbuilding","status":"connected"}],"model":"claude-offline-test","sessionId":"<session:1>","tools":["Task","Bash","CronCreate","CronDelete","CronList","Edit","EnterWorktree","ExitWorktree","ListAgents","Monitor","NotebookEdit","Read","ReportFindings","ScheduleWakeup","SendMessage","Skill","TaskStop","ToolSearch","WebFetch","WebSearch","Workflow","Write","mcp__selfbuilding__submit_result"],"type":"session.started"}
+{"role":"assistant","text":"Submitting.","type":"message"}
+{"callId":"toolu_fake_1","effect":"read","input":{"status":"bogus"},"name":"mcp__selfbuilding__submit_result","server":"selfbuilding","source":"mcp","summary":"mcp__selfbuilding__submit_result","type":"tool.started"}
+{"callId":"toolu_fake_1","name":"mcp__selfbuilding__submit_result","ok":false,"output":"status: must be \"done\"","type":"tool.completed"}
+{"callId":"toolu_fake_2","effect":"read","input":{"status":"done","summary":"ok"},"name":"mcp__selfbuilding__submit_result","server":"selfbuilding","source":"mcp","summary":"mcp__selfbuilding__submit_result","type":"tool.started"}
+{"callId":"toolu_fake_2","name":"mcp__selfbuilding__submit_result","ok":true,"output":"Accepted. Stop now.","type":"tool.completed"}
+{"cachedInputTokens":40,"costUsd":"<usd>","cumulative":true,"inputTokens":200,"outputTokens":50,"type":"usage"}
+{"reason":"end_turn","type":"turn.ended"}

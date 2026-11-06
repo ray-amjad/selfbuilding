@@ -1,0 +1,5 @@
+{"mcp":[{"error":"failed","name":"selfbuilding","status":"failed"}],"model":"claude-test","sessionId":"<session:1>","tools":["Bash"],"type":"session.started"}
+{"failure":{"code":"harness_crash","message":"The selfbuilding MCP server failed to connect: failed.","retryable":false},"type":"error"}
+{"role":"assistant","text":"I cannot find a submit tool.","type":"message"}
+{"cachedInputTokens":0,"costUsd":"<usd>","cumulative":true,"inputTokens":50,"outputTokens":10,"type":"usage"}
+{"reason":"end_turn","type":"turn.ended"}

@@ -1,0 +1,12 @@
+{"mcp":[{"name":"selfbuilding","status":"connected"}],"model":"claude-offline-test","sessionId":"<session:1>","tools":["Task","Bash","CronCreate","CronDelete","CronList","Edit","EnterWorktree","ExitWorktree","ListAgents","Monitor","NotebookEdit","Read","ReportFindings","ScheduleWakeup","SendMessage","Skill","TaskStop","ToolSearch","WebFetch","WebSearch","Workflow","Write","mcp__selfbuilding__submit_result"],"type":"session.started"}
+{"callId":"toolu_fake_5","effect":"effect","input":{"command":"echo hi","description":"say hi"},"name":"Bash","source":"builtin","summary":"Bash: echo hi","type":"tool.started"}
+{"callId":"toolu_fake_5","name":"Bash","ok":true,"output":"hi","type":"tool.completed"}
+{"callId":"toolu_fake_6","effect":"effect","input":{"content":"hello\n","file_path":"/selfbuilding/work/notes.txt"},"name":"Write","source":"builtin","summary":"Write: /selfbuilding/work/notes.txt","type":"tool.started"}
+{"callId":"toolu_fake_6","name":"Write","ok":true,"output":"File created successfully at: /selfbuilding/work/notes.txt (file state is current in your context — no need to Read it back)","type":"tool.completed"}
+{"change":"add","path":"/selfbuilding/work/notes.txt","type":"file.changed"}
+{"callId":"toolu_fake_7","effect":"read","input":{"file_path":"/selfbuilding/work/notes.txt"},"name":"Read","source":"builtin","summary":"Read: /selfbuilding/work/notes.txt","type":"tool.started"}
+{"callId":"toolu_fake_7","name":"Read","ok":true,"output":"1\thello\n2\t","type":"tool.completed"}
+{"callId":"toolu_fake_8","effect":"read","input":{"status":"done"},"name":"mcp__selfbuilding__submit_result","server":"selfbuilding","source":"mcp","summary":"mcp__selfbuilding__submit_result","type":"tool.started"}
+{"callId":"toolu_fake_8","name":"mcp__selfbuilding__submit_result","ok":true,"output":"Accepted. Stop now.","type":"tool.completed"}
+{"cachedInputTokens":80,"costUsd":"<usd>","cumulative":true,"inputTokens":400,"outputTokens":100,"type":"usage"}
+{"reason":"end_turn","type":"turn.ended"}

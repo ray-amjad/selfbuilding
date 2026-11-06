@@ -1,0 +1,11 @@
+{"type":"thread.started","thread_id":"0199a214-0a11-7d42-9f0e-3c6e0f1d2b77"}
+{"type":"turn.started"}
+{"type":"item.started","item":{"id":"item_0","type":"command_execution","command":"bash -lc 'pnpm test'","aggregated_output":"","exit_code":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_0","type":"command_execution","command":"bash -lc 'pnpm test'","aggregated_output":"FAIL src/app.test.ts\n1 failed\n","exit_code":1,"status":"failed"}}
+{"type":"item.started","item":{"id":"item_1","type":"mcp_tool_call","server":"github","tool":"create_comment","arguments":{"body":"hi"},"result":null,"error":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_1","type":"mcp_tool_call","server":"github","tool":"create_comment","arguments":{"body":"hi"},"result":null,"error":{"message":"MCP tool call requires approval, but approval policy is never"},"status":"failed"}}
+{"type":"item.started","item":{"id":"item_2","type":"mcp_tool_call","server":"selfbuilding","tool":"submit_result","arguments":{"status":"bogus"},"result":null,"error":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_2","type":"mcp_tool_call","server":"selfbuilding","tool":"submit_result","arguments":{"status":"bogus"},"result":null,"error":{"message":"status: must be \"done\""},"status":"failed"}}
+{"type":"item.completed","item":{"id":"item_3","type":"file_change","changes":[{"path":"/selfbuilding/work/README.md","kind":"delete"}],"status":"failed"}}
+{"type":"item.completed","item":{"id":"item_4","type":"agent_message","text":"The tests fail; stopping."}}
+{"type":"turn.completed","usage":{"input_tokens":9001,"cached_input_tokens":0,"output_tokens":311}}

@@ -1,0 +1,6 @@
+{"mcp":[{"name":"selfbuilding","status":"connected"}],"model":"claude-offline-test","sessionId":"<session:1>","tools":["Task","Bash","CronCreate","CronDelete","CronList","Edit","EnterWorktree","ExitWorktree","ListAgents","Monitor","NotebookEdit","Read","ReportFindings","ScheduleWakeup","SendMessage","Skill","TaskStop","ToolSearch","WebFetch","WebSearch","Workflow","Write","mcp__selfbuilding__submit_result"],"type":"session.started"}
+{"attempt":1,"cause":"auth","delayMs":624,"type":"retry"}
+{"attempt":2,"cause":"auth","delayMs":1211,"type":"retry"}
+{"cachedInputTokens":0,"costUsd":"<usd>","cumulative":true,"inputTokens":0,"outputTokens":0,"type":"usage"}
+{"failure":{"code":"auth","message":"Invalid API key · Fix external API key","retryable":false},"type":"error"}
+{"reason":"error","type":"turn.ended"}

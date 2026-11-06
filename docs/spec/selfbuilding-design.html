@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selfbuilding v1: system design</title>
+<style>
+  :root{
+    --bg:#0b0e17; --bg2:#111628; --panel:#151b31; --panel2:#1b2340; --line:#2a3458;
+    --ink:#e8ebf5; --mute:#97a0bf; --dim:#6b7497;
+    --amber:#ffb547; --amber2:#ffd28a; --moon:#9fb4ff; --teal:#5fd4c4; --rose:#ff7a8a; --violet:#b69cff; --green:#7fdc8f;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%, #1d2650 0%, transparent 60%),radial-gradient(900px 500px at -10% 10%, #2a1d3d 0%, transparent 55%),var(--bg);color:var(--ink);font:15px/1.6 var(--sans);}
+  a{color:var(--moon)}
+  code,pre{font-family:var(--mono)}
+  code{font-size:.88em;background:#0f1428;border:1px solid var(--line);padding:.05em .35em;border-radius:5px;color:var(--amber2)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(11,14,23,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:22px;align-items:center;height:54px;overflow-x:auto}
+  nav .brand{font-weight:700;letter-spacing:.02em;white-space:nowrap}
+  nav .brand span{color:var(--amber)}
+  nav a{color:var(--mute);text-decoration:none;font-size:13.5px;white-space:nowrap}
+  nav a:hover{color:var(--ink)}
+  header{padding:72px 0 40px}
+  .eyebrow{color:var(--amber);font:600 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+  h1{font-size:52px;line-height:1.05;margin:14px 0 16px;letter-spacing:-.02em}
+  h1 em{font-style:normal;color:var(--amber)}
+  .lede{font-size:19px;color:var(--mute);max-width:820px}
+  .moon{position:absolute;right:6%;top:84px;width:120px;height:120px;border-radius:50%;box-shadow:inset -28px -8px 0 0 var(--amber2);opacity:.85;transform:rotate(-20deg)}
+  section{padding:48px 0;border-top:1px solid var(--line)}
+  h2{font-size:30px;margin:0 0 6px;letter-spacing:-.01em}
+  h2 small{display:block;font:500 13px var(--mono);color:var(--dim);letter-spacing:.06em;margin-bottom:8px}
+  h3{font-size:18px;margin:26px 0 10px}
+  p.sub{color:var(--mute);margin:0 0 26px;max-width:860px}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr} h1{font-size:38px} .moon{display:none}}
+  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .card h4{margin:0 0 6px;font-size:15px}
+  .card p{margin:0;color:var(--mute);font-size:14px}
+  .tldr li{margin:6px 0;color:var(--ink)} .tldr li b{color:var(--amber2)}
+
+  /* architecture */
+  .arch{display:grid;gap:12px}
+  .layer{border:1px solid var(--line);border-radius:16px;padding:14px 16px;position:relative;background:rgba(21,27,49,.65)}
+  .layer > .lbl{position:absolute;top:-10px;left:14px;background:var(--bg);padding:0 8px;font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+  .l-you{border-color:#3d4a7a} .l-you>.lbl{color:var(--moon)}
+  .l-core{border-color:var(--amber);box-shadow:0 0 0 1px rgba(255,181,71,.15),0 10px 40px -20px rgba(255,181,71,.5)} .l-core>.lbl{color:var(--amber)}
+  .l-plug>.lbl{color:var(--teal)} .l-box{border-color:#5a3f8f;border-style:dashed} .l-box>.lbl{color:var(--violet)}
+  .l-store>.lbl{color:var(--green)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font:500 12.5px var(--mono);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:#10152a;color:var(--ink);white-space:nowrap}
+  .chip.a{border-color:rgba(255,181,71,.55);color:var(--amber2)}
+  .chip.t{border-color:rgba(95,212,196,.45);color:#b8f0e8}
+  .chip.v{border-color:rgba(182,156,255,.45);color:#ddd2ff}
+  .chip.g{border-color:rgba(127,220,143,.45);color:#cdf3d4}
+  .chip.x{opacity:.6;border-style:dashed}
+  .down{text-align:center;color:var(--dim);font:13px var(--mono);margin:-2px 0}
+  .plugs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:900px){.plugs{grid-template-columns:1fr 1fr}}
+  .plug{border:1px solid var(--line);border-radius:12px;padding:12px;background:#10152a}
+  .plug h5{margin:0 0 8px;font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+  .plug .what{color:var(--mute);font-size:12.5px;margin:0 0 10px}
+  .sandbox{display:grid;grid-template-columns:1.45fr 1fr;gap:14px}
+  @media(max-width:900px){.sandbox{grid-template-columns:1fr}}
+  .tree{font:12px/1.75 var(--mono);color:var(--ink);background:#0d1122;border:1px solid var(--line);border-radius:12px;padding:12px 14px;white-space:pre;overflow:auto}
+  .tree .c{color:var(--dim)} .tree .h{color:var(--amber2)} .tree .p{color:#ddd2ff}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .tab{font:600 13px var(--sans);padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:#10152a;color:var(--mute);cursor:pointer}
+  .tab[aria-selected=true]{background:var(--panel2);color:var(--ink);border-color:var(--amber)}
+  .pane{display:none} .pane.on{display:block}
+
+  /* flows */
+  .flow{display:grid;gap:10px}
+  .step{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:start}
+  .num{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font:700 14px var(--mono);background:#10152a;border:1px solid var(--line);color:var(--amber)}
+  .step .body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+  .step .body b{color:var(--ink)} .step .body span{color:var(--mute);font-size:14px}
+  .where{font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:6px;margin-right:8px;vertical-align:1px}
+  .w-host{background:rgba(159,180,255,.15);color:var(--moon)}
+  .w-box{background:rgba(182,156,255,.15);color:var(--violet)}
+  .w-human{background:rgba(255,122,138,.15);color:var(--rose)}
+  .w-store{background:rgba(127,220,143,.15);color:var(--green)}
+  .states{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:12.5px var(--mono);margin:6px 0 4px}
+  .states .s{padding:4px 9px;border-radius:7px;background:#10152a;border:1px solid var(--line)}
+  .states .s.ok{border-color:rgba(127,220,143,.6);color:var(--green)}
+  .states .s.bad{border-color:rgba(255,122,138,.5);color:var(--rose)}
+  .states .s.wait{border-color:rgba(255,181,71,.5);color:var(--amber2)}
+  .states i{color:var(--dim);font-style:normal}
+  .callout{border-left:3px solid var(--amber);background:rgba(255,181,71,.06);padding:10px 14px;border-radius:0 10px 10px 0;color:var(--ink);margin:14px 0}
+  .callout.v{border-color:var(--violet);background:rgba(182,156,255,.06)}
+
+  /* placement diagram */
+  .place{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:900px){.place{grid-template-columns:1fr 1fr}}
+  .pbox{border:1px solid var(--line);border-radius:14px;padding:14px;background:#10152a}
+  .pbox h5{margin:0 0 4px;font-size:14px}
+  .pbox .k{font:12px var(--mono);color:var(--amber2)}
+  .pbox p{color:var(--mute);font-size:13px;margin:8px 0 0}
+  .mini{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .mini .sb{border:1px dashed #5a3f8f;border-radius:8px;padding:6px 8px;font:11.5px var(--mono);color:#ddd2ff}
+  .mini .ag{display:block;color:var(--amber2)}
+
+  /* code */
+  pre.code{margin:0;background:#0b0f1f;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:13px;line-height:1.6;color:#d7dcf0}
+  .kw{color:#c89bff} .str{color:#9be29b} .cm{color:#5f6a90;font-style:italic} .fn{color:var(--amber2)} .ty{color:#7fd3ff}
+  .filename{font:600 12px var(--mono);color:var(--dim);margin:0 0 6px}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font:600 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+  td code{white-space:nowrap}
+  .tag{font:600 10.5px var(--mono);padding:2px 7px;border-radius:6px;letter-spacing:.06em}
+  .tag.new{background:rgba(255,181,71,.15);color:var(--amber)}
+  .tag.acc{background:rgba(159,180,255,.12);color:var(--moon)}
+
+  /* roadmap */
+  .road{display:grid;grid-template-columns:2fr 3fr 4fr 4fr 4fr 3fr;gap:6px;margin:10px 0 6px}
+  @media(max-width:900px){.road{grid-template-columns:1fr}}
+  .ms{border-radius:12px;padding:12px;border:1px solid var(--line);background:linear-gradient(180deg,#18203d,#10152a)}
+  .ms .id{font:700 13px var(--mono);color:var(--amber)}
+  .ms .wk{font:12px var(--mono);color:var(--dim)}
+  .ms ul{margin:8px 0 0;padding-left:16px;color:var(--mute);font-size:12.5px}
+  .ms ul li{margin:3px 0}
+  .weeks{display:flex;justify-content:space-between;font:11px var(--mono);color:var(--dim)}
+  footer{padding:40px 0 80px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <div class="brand">self<span>building</span> · v1 design</div>
+  <a href="#arch">Architecture</a><a href="#flows">Flows</a><a href="#placement">Sandboxes</a><a href="#api">API</a><a href="#packages">Packages</a><a href="#safety">Failure modes</a><a href="#decisions">Decisions</a><a href="#roadmap">Roadmap</a>
+</div></nav>
+
+<header><div class="wrap" style="position:relative">
+  <div class="moon"></div>
+  <div class="eyebrow">Draft · 2026-11-01 · companion to docs/selfbuilding-v1-spec.md</div>
+  <h1>Your skills, as functions.<br><em>Running while you sleep.</em></h1>
+  <p class="lede">Selfbuilding is an MIT, library-first TypeScript toolkit for building a software factory. Every <code>SKILL.md</code> folder becomes a typed <code>Agent()</code>. You compose agents in plain TypeScript, run them on any coding-agent harness, inside any sandbox provider, on a durable host you already use, and a human gets asked on Slack, Discord or a PR only when the agent needs one.</p>
+  <div class="grid g4" style="margin-top:30px">
+    <div class="card"><h4>Typed agents</h4><p>Results come back through an injected <code>submit_result</code> tool, so they're validated against a Zod schema. Text is never scraped.</p></div>
+    <div class="card"><h4>Plain-TS composition</h4><p><code>agent()</code>, <code>pipeline()</code>, <code>parallel()</code>, <code>step()</code>, <code>ask()</code>, with no DSL and no graph builder.</p></div>
+    <div class="card"><h4>One durability system</h4><p>Resume from a journal on plain Node. On Trigger.dev, Inngest or Cloudflare Workflows, the host's own steps are the journal.</p></div>
+    <div class="card"><h4>Bring your infra</h4><p>7 harnesses × 7 providers × 3 chat channels. Every adapter passes a public conformance suite.</p></div>
+  </div>
+</div></header>
+
+<!-- ============ ARCHITECTURE ============ -->
+<section id="arch"><div class="wrap">
+  <h2><small>01 · ARCHITECTURE</small>The whole system on one page</h2>
+  <p class="sub">Your factory code calls the core. The core holds no state in memory: it writes every completed step to a journal, and calls into four kinds of plug-in. The only part of Selfbuilding that runs inside a sandbox is a small runtime that drives the harness and talks to the host.</p>
+
+  <div class="arch">
+    <div class="layer l-you"><span class="lbl">Your code</span>
+      <div class="grid g3" style="margin-top:6px">
+        <div><b>selfbuilding.config.ts</b><div style="color:var(--mute);font-size:13.5px">Default harness, sandbox, journal, budget, concurrency, skill sources</div></div>
+        <div><b>factories/*.ts</b><div style="color:var(--mute);font-size:13.5px"><code>factory({ name, input, output }, async (input) =&gt; …)</code>: ordinary async functions</div></div>
+        <div><b>.agents/skills/*/SKILL.md</b><div style="color:var(--mute);font-size:13.5px">Any skill folder, plus an optional sidecar contract (input/output schema, done checks)</div></div>
+      </div>
+    </div>
+    <div class="down">▼ import { factory, agent, pipeline, … } from "@selfbuilding/core"   ·   or: npx selfbuilding run</div>
+
+    <div class="layer l-core"><span class="lbl">@selfbuilding/core</span>
+      <div class="chips" style="margin:6px 0 10px">
+        <span class="chip a">factory · run</span><span class="chip a">Agent.fromSkill</span><span class="chip a">agent()</span><span class="chip a">pipeline()</span><span class="chip a">parallel()</span><span class="chip a">step()</span><span class="chip a">phase() · log()</span><span class="chip a">ask()</span><span class="chip a">sandbox() · fork() · snapshot()</span><span class="chip a">reap()</span>
+      </div>
+      <div class="grid g4">
+        <div class="card"><h4>Journal replay</h4><p>Each call is keyed by a <code>callPath</code> + <code>stepKey</code> hash. Unchanged calls replay from the journal, and only edited or new ones run live.</p></div>
+        <div class="card"><h4>Budget &amp; caps</h4><p>One shared USD and wall-clock budget, a sandbox concurrency cap and a create-rate limiter per run.</p></div>
+        <div class="card"><h4>Determinism</h4><p><code>now()</code>, <code>random()</code> and <code>uuid()</code> are journaled. An ESLint rule bans <code>Date.now</code> and <code>Math.random</code> in factories.</p></div>
+        <div class="card"><h4>Events &amp; errors</h4><p>One event envelope for all sinks (stdout, OTel, Slack). Errors are named, typed and come with recovery fields.</p></div>
+      </div>
+    </div>
+    <div class="down">▼ four plug-in interfaces · values, never strings</div>
+
+    <div class="layer l-plug"><span class="lbl">Plug-ins</span>
+      <div class="plugs" style="margin-top:6px">
+        <div class="plug"><h5>Hosts</h5><p class="what">Run the factory and provide durability</p>
+          <div class="chips"><span class="chip t">plain Node (built in)</span><span class="chip t">Trigger.dev ★</span><span class="chip t">Inngest</span><span class="chip t">Cloudflare Workflows</span></div></div>
+        <div class="plug"><h5>Harnesses</h5><p class="what">The coding-agent CLI that runs a turn</p>
+          <div class="chips"><span class="chip t">Claude Code</span><span class="chip t">Codex</span><span class="chip t">OpenCode</span><span class="chip t x">Amp</span><span class="chip t x">Droid</span><span class="chip t x">Pi</span><span class="chip t x">Grok</span></div></div>
+        <div class="plug"><h5>Providers</h5><p class="what">Where the sandbox lives</p>
+          <div class="chips"><span class="chip t">Docker</span><span class="chip t">Impello ★</span><span class="chip t">E2B</span><span class="chip t">Daytona</span><span class="chip t">Vercel Sandbox</span><span class="chip t">Modal</span><span class="chip t">Cloudflare Sandbox</span></div></div>
+        <div class="plug"><h5>Channels</h5><p class="what">Where a human is asked and notified</p>
+          <div class="chips"><span class="chip t">Slack</span><span class="chip t">Discord</span><span class="chip t">GitHub PR comments</span></div></div>
+      </div>
+      <p style="color:var(--dim);font:12px var(--mono);margin:10px 0 0">★ reference / dogfood deployment · dashed = experimental tier in v1</p>
+    </div>
+
+    <div class="grid g2">
+      <div class="layer l-store" style="margin-top:12px"><span class="lbl">Stores</span>
+        <div class="chips" style="margin-top:6px"><span class="chip g">JournalStore: file · SQLite · host step memo</span><span class="chip g">ArtifactStore: file · S3/R2 (conditional writes)</span><span class="chip g">AskStore</span><span class="chip g">EventSink: stdout · OTel</span></div>
+      </div>
+      <div class="layer l-store" style="margin-top:12px;border-style:dashed"><span class="lbl" style="color:var(--dim)">Later · optional control plane</span>
+        <div class="chips" style="margin-top:6px"><span class="chip x">Cloudflare Workers + Durable Objects</span><span class="chip x">run index</span><span class="chip x">live transcript view</span><span class="chip x">central HITL routing</span><span class="chip x">hosted reaper</span></div>
+      </div>
+    </div>
+
+    <div class="layer l-box" style="margin-top:12px"><span class="lbl">Inside every sandbox</span>
+      <div class="sandbox" style="margin-top:6px">
+<div class="tree"><span class="c">sandbox  (image: selfbuilding/&lt;harness&gt;)</span>
+└── <span class="h">ns-reap</span>                 <span class="c"># subreaper: kills the whole process tree</span>
+    └── <span class="h">selfbuilding-runtime</span>  <span class="c"># one Node process, three roles</span>
+        ├── <span class="p">Supervisor</span>      <span class="c"># boot, timeouts, settle, outcome.json</span>
+        ├── <span class="p">Bridge</span>          <span class="c"># events.jsonl, heartbeat, wake callbacks, inbox</span>
+        ├── <span class="p">Tool socket</span>     <span class="c"># /run/selfbuilding/tools.sock</span>
+        └── <span class="h">harness</span>  <span class="c">(claude | codex | opencode | …)</span>
+            └── <span class="p">selfbuilding-mcp</span>  <span class="c"># submit_result · ask_human · notify_human</span></div>
+        <div class="grid" style="gap:10px">
+          <div class="card"><h4>The host reaches the sandbox by exec, never the other way</h4><p>The sandbox needs no inbound port. The host polls the runtime with a long-poll <code>wait</code>; callbacks from the sandbox only wake the host sooner.</p></div>
+          <div class="card"><h4>Only the supervisor writes the result</h4><p>The agent calls <code>submit_result</code>, the supervisor checks it against the schema, and it either answers "accepted, stop now" or returns the errors so the agent can fix them and try again.</p></div>
+          <div class="card"><h4>Secrets arrive as 0600 files</h4><p>They're never env vars or baked into images. The agent's git token is read-only, and the host pushes the branch after the agent's processes have exited.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ FLOWS ============ -->
+<section id="flows"><div class="wrap">
+  <h2><small>02 · RUN LIFECYCLE</small>How the pieces move</h2>
+  <p class="sub">Four flows cover nearly everything: one agent call, a question to a human, a crash and resume, and passing work between sandboxes.</p>
+
+  <div class="tabs" role="tablist" data-group="flows">
+    <button class="tab" role="tab" aria-selected="true" data-pane="f1">An agent() call</button>
+    <button class="tab" role="tab" data-pane="f2">ask(): hot and cold waits</button>
+    <button class="tab" role="tab" data-pane="f3">Crash → resume</button>
+    <button class="tab" role="tab" data-pane="f4">Factory over many items</button>
+  </div>
+
+  <div class="pane on" id="f1">
+    <div class="callout">On every host, one <code>agent()</code> call becomes the same four parts: <b>launch → wait → collect → accept</b>. Launch and collect are host steps and safe to retry. The wait is one long durable wait, keyed on the launch id.</div>
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div class="body"><span class="where w-store">journal</span><b>Plan.</b> <span>Compute <code>callPath</code> and <code>stepKey</code>. If the journal already holds a result for this key, return it right away (replay).</span></div></div>
+      <div class="step"><div class="num">2</div><div class="body"><span class="where w-host">host · launch</span><b>Acquire a sandbox.</b> <span>Record the intent <em>before</em> the remote call, then <code>openOrCreate</code> it with labels (<code>selfbuilding.run</code>, <code>.step</code>, <code>.launch</code>) and a finite lifetime. Upload the runtime if its SHA differs, stage the skill and input, and start the harness detached.</span></div></div>
+      <div class="step"><div class="num">3</div><div class="body"><span class="where w-box">sandbox</span><b>Run the turn.</b> <span>The supervisor boots, spawns the harness and streams normalised, redacted events to <code>events.jsonl</code>. The agent works, then calls <code>submit_result</code>. A bad shape is rejected with the errors and retried in the same run.</span></div></div>
+      <div class="step"><div class="num">4</div><div class="body"><span class="where w-host">host · wait</span><b>One durable wait.</b> <span>The host sleeps cheaply. The runtime's callback (<code>submitted</code>, <code>failed</code>, <code>ask</code>…) wakes it early, and the reaper is the backstop if a callback never arrives.</span></div></div>
+      <div class="step"><div class="num">5</div><div class="body"><span class="where w-host">host · collect</span><b>Read the outcome.</b> <span>Read <code>outcome.json</code> + <code>result.json</code>, re-check the schema and size caps, upload artifacts (transcript, diff), and write the outcome record.</span></div></div>
+      <div class="step"><div class="num">6</div><div class="body"><span class="where w-host">host · accept</span><b>Final checks, then push.</b> <span>Run the Zod parse (refinements, transforms) and the done checks (tests, protected files untouched). The host pushes the branch with its own write token and opens or updates the PR as the GitHub App. Then the sandbox is disposed, or parked if it's shared.</span></div></div>
+    </div>
+    <h3>Call states</h3>
+    <div class="states"><span class="s">planned</span><i>→</i><span class="s">provisioning</span><i>→</i><span class="s">booting</span><i>→</i><span class="s">running</span><i>⇄</i><span class="s wait">waiting (hot ask)</span><i>⇄</i><span class="s wait">suspended (cold ask)</span><i>→</i><span class="s">settling</span><i>→</i><span class="s ok">succeeded</span><span class="s bad">failed</span><span class="s bad">cancelled</span><span class="s bad">timed_out</span></div>
+    <div class="states"><span class="s wait">unknown</span><i>= contact lost, reconcile by label ·</i><span class="s wait">interrupted</span><i>= dead turn found; default <code>fail</code>, opt-in <code>resume-session</code></i></div>
+    <p style="color:var(--mute);font-size:14px">Fencing: every exec, callback and file the host reads carries <code>(callId, attempt)</code>. An outcome from an older attempt is recorded as <code>late_outcome</code> and ignored. Once the journal marks a call terminal, nothing changes it.</p>
+  </div>
+
+  <div class="pane" id="f2">
+    <div class="callout v">One primitive, <code>ask()</code>. It's called from factory code, or by the agent through the <code>ask_human</code> tool. Selfbuilding decides whether to hold the sandbox open (hot) or park it (cold); the agent never chooses.</div>
+    <div class="grid g2">
+      <div>
+        <h3>Hot wait: the answer comes quickly</h3>
+        <div class="flow">
+          <div class="step"><div class="num">1</div><div class="body"><span class="where w-box">sandbox</span><span>Agent calls <code>ask_human</code>. The tool call blocks, and the call state becomes <code>waiting</code>, which pauses its time limits.</span></div></div>
+          <div class="step"><div class="num">2</div><div class="body"><span class="where w-host">host</span><span>The host creates the ask record and a durable waitpoint, then posts to every channel: Slack buttons, a Discord thread, a PR comment.</span></div></div>
+          <div class="step"><div class="num">3</div><div class="body"><span class="where w-human">human</span><span>A human clicks or replies. The webhook handler (<code>@selfbuilding/hooks</code>) resolves the waitpoint.</span></div></div>
+          <div class="step"><div class="num">4</div><div class="body"><span class="where w-box">sandbox</span><span>The answer goes into the inbox, the tool call returns, and the agent carries on in the same turn.</span></div></div>
+        </div>
+        <p style="color:var(--mute);font-size:13.5px">The default hot wait is 10 minutes, capped below each harness's own MCP tool timeout.</p>
+      </div>
+      <div>
+        <h3>Cold wait: the answer is slow</h3>
+        <div class="flow">
+          <div class="step"><div class="num">1</div><div class="body"><span class="where w-box">sandbox</span><span>The tool returns <code>suspended</code> ("end your turn, you'll be resumed"). The runtime saves the harness session id and session file.</span></div></div>
+          <div class="step"><div class="num">2</div><div class="body"><span class="where w-box">park</span><span>The sandbox is parked in the strongest way the provider supports: memory <code>pause()</code>, otherwise a filesystem <code>snapshot()</code> then kill, otherwise a pushed work-in-progress branch then kill.</span></div></div>
+          <div class="step"><div class="num">3</div><div class="body"><span class="where w-host">host</span><span>The host's durable wait takes over, so no compute and no budget is spent while waiting.</span></div></div>
+          <div class="step"><div class="num">4</div><div class="body"><span class="where w-host">resume</span><span>When the answer arrives, the host reopens or rebuilds the sandbox and resumes the session (<code>--resume</code>, <code>exec resume</code>, <code>--session</code>) with: <i>"Answer to your question #2 from @alice via Slack: …"</i></span></div></div>
+        </div>
+      </div>
+    </div>
+    <h3>AFK runs</h3>
+    <p style="color:var(--mute)">With no human, every ask resolves by its declared policy: auto-answer, a default after a timeout, or fail. High-risk asks can only fall back to a safe choice. Asks from a shared sandbox are hot-only, so <code>fork()</code> first if you need a long question.</p>
+  </div>
+
+  <div class="pane" id="f3">
+    <div class="callout">Crash, edit your factory, re-run with the same <code>runId</code>. Calls whose identity is unchanged return their recorded result instantly, and only the first edited call onwards runs live. A turn that was interrupted mid-flight is never silently re-run.</div>
+    <div class="grid g2">
+      <div class="flow">
+        <div class="step"><div class="num">1</div><div class="body"><b>Run 1.</b> <span><code>implement</code> ✓, <code>review-0</code> ✓, then <code>fix-0</code> starts… and the process crashes.</span></div></div>
+        <div class="step"><div class="num">2</div><div class="body"><b>You edit the fix prompt</b> <span>and run <code>npx selfbuilding resume &lt;runId&gt;</code>.</span></div></div>
+        <div class="step"><div class="num">3</div><div class="body"><span class="where w-store">replay</span><span><code>implement</code>, <code>review-0</code> and the exec and push before them are served from the journal.</span></div></div>
+        <div class="step"><div class="num">4</div><div class="body"><span class="where w-box">sandbox</span><span>The shared box is reused only if it passes every safety check. Otherwise it is rebuilt from the <code>implement</code> checkpoint (git by default).</span></div></div>
+        <div class="step"><div class="num">5</div><div class="body"><span class="where w-host">live</span><span><code>fix-0</code> (the edited prompt) and everything after it run live.</span></div></div>
+      </div>
+      <div>
+        <div class="card"><h4>What a call's identity includes</h4><p><code>stepKey = sha256({ callPath, skill/prompt, input, options, history })</code>, encoded as 26 characters. <code>callPath</code> is readable (<code>pipeline#0/[issue-412]/stage#1/ImplementSpec#0</code>). Counters are kept per name, so adding a <code>CodeReview</code> doesn't shift <code>ImplementSpec</code>'s path.</p></div>
+        <div class="card" style="margin-top:10px"><h4>Epochs</h4><p>Resuming after a terminal failure starts a new epoch, which never serves a cached failure. <code>refresh: ["list-issues"]</code> re-runs a named <code>step()</code> on purpose.</p></div>
+        <div class="card" style="margin-top:10px"><h4>One durability system</h4><p>Plain Node uses <code>fileJournal()</code> or <code>sqliteJournal()</code>, with a lease so two processes can't drive one run. On Trigger.dev, Inngest or CF Workflows the host's step memo plus the result store <em>is</em> the journal; it's never both.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane" id="f4">
+    <div class="callout"><code>pipeline()</code> has no barrier: each item moves to its next stage as soon as it's ready. <code>parallel()</code> is the explicit barrier. In both, a failed child becomes <code>null</code> and the error goes on the event stream. A direct agent call throws.</div>
+    <div class="grid g2">
+      <div class="flow">
+        <div class="step"><div class="num">1</div><div class="body"><span class="where w-store">step</span><span><code>step("list-issues")</code> fetches 20 issues once, and replay sees the same list.</span></div></div>
+        <div class="step"><div class="num">2</div><div class="body"><span class="where w-box">stage 1</span><span><code>PlanIssue</code> on a cheaper model, in a fresh read-only sandbox. Returning <code>null</code> drops that item.</span></div></div>
+        <div class="step"><div class="num">3</div><div class="body"><span class="where w-box">stage 2</span><span><code>ImplementSpec</code> in its own fresh sandbox, then the host pushes <code>selfbuilding/&lt;runId&gt;/…</code>.</span></div></div>
+        <div class="step"><div class="num">4</div><div class="body"><span class="where w-box">stage 3</span><span><code>CodeReview</code> of the branch. If it approves, a <code>step("open-pr-412")</code> opens the PR.</span></div></div>
+      </div>
+      <div>
+        <div class="card"><h4>Scheduling</h4><p>Up to <code>concurrency.sandboxes</code> agents at once, with later stages scheduled first so finished work drains. One stage throwing drops only its own item.</p></div>
+        <div class="card" style="margin-top:10px"><h4>Incremental re-runs</h4><p>Items are keyed (<code>key: i =&gt; `issue-${i.number}`</code>). A 21st issue appearing replays the existing 20 and runs only the new one.</p></div>
+        <div class="card" style="margin-top:10px"><h4>Budget</h4><p>Each agent gets a slice: <code>min(remaining, perAgent.usd ?? usd / sandboxes)</code>, and the unused part goes back when it ends. When the budget runs out, the call throws <code>BudgetExceededError</code>.</p></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ PLACEMENT ============ -->
+<section id="placement"><div class="wrap">
+  <h2><small>03 · SANDBOX PLACEMENT</small>Same sandbox, or different, with information passed between</h2>
+  <p class="sub">You choose where each agent runs. The default is a fresh sandbox per call: isolated and safe to replay. Sharing a working tree is opt-in, through an explicit handle.</p>
+  <div class="place">
+    <div class="pbox"><h5>Fresh (default)</h5><div class="k">sandbox: "fresh"</div>
+      <div class="mini"><div class="sb"><span class="ag">ImplementSpec</span>box A</div><div class="sb"><span class="ag">CodeReview</span>box B</div></div>
+      <p>Each call gets its own sandbox, closed when the call ends. Information passes as <b>typed results</b>.</p></div>
+    <div class="pbox"><h5>Shared handle</h5><div class="k">await using box = sandbox({…})</div>
+      <div class="mini"><div class="sb"><span class="ag">Implement → Fix → Fix</span>box W</div></div>
+      <p>Consecutive agents share one working tree. Fast, nothing to copy. One agent runs at a time per handle, and asks are hot-only.</p></div>
+    <div class="pbox"><h5>Fork</h5><div class="k">box.fork(3) · box.snapshot()</div>
+      <div class="mini"><div class="sb"><span class="ag">judge-0</span>fork 0</div><div class="sb"><span class="ag">judge-1</span>fork 1</div><div class="sb"><span class="ag">judge-2</span>fork 2</div></div>
+      <p>Copies of one sandbox's state, so parallel judges can edit and run tests without touching each other.</p></div>
+    <div class="pbox"><h5>Branch handoff</h5><div class="k">box.push() → head: branch</div>
+      <div class="mini"><div class="sb"><span class="ag">Implement</span>Impello</div><div class="sb"><span class="ag">Review</span>Docker · Codex</div></div>
+      <p>The lasting way to hand work across providers, harnesses or days. The reviewer sees only the pushed branch.</p></div>
+  </div>
+  <h3>Three ways information moves between agents</h3>
+  <table>
+    <tr><th>Channel</th><th>What moves</th><th>Survives a crash</th><th>Typical use</th></tr>
+    <tr><td><b>Typed results</b></td><td><code>impl.result.changes</code>, <code>review.result.findings</code></td><td>Yes: journaled</td><td>Any agent → any agent: the default handoff</td></tr>
+    <tr><td><b>Shared workspace</b></td><td>The working tree, installed deps, build output</td><td>Through checkpoints (git by default)</td><td>implement → test → fix loops</td></tr>
+    <tr><td><b>Git branch / snapshot / fork</b></td><td>Whole filesystem state, or the committed diff</td><td>Yes</td><td>Independent reviewers, judge panels, moving work to another provider</td></tr>
+  </table>
+</div></section>
+
+<!-- ============ API ============ -->
+<section id="api"><div class="wrap">
+  <h2><small>04 · API BY EXAMPLE</small>What it feels like to use</h2>
+  <p class="sub">All primitives are imported from <code>@selfbuilding/core</code> and find the current run implicitly (there's no <code>ctx</code>). Harness, sandbox and journal are values, never strings, and the model is set on the harness value.</p>
+  <div class="tabs" role="tablist" data-group="api">
+    <button class="tab" aria-selected="true" data-pane="a0">Quickstart</button>
+    <button class="tab" data-pane="a1">Config</button>
+    <button class="tab" data-pane="a2">Review a PR</button>
+    <button class="tab" data-pane="a3">Implement → review → fix</button>
+    <button class="tab" data-pane="a4">Pipeline over issues</button>
+    <button class="tab" data-pane="a5">Judge panel on forks</button>
+    <button class="tab" data-pane="a6">Your own skill</button>
+    <button class="tab" data-pane="a7">Deploy on Trigger.dev</button>
+  </div>
+
+<div class="pane on" id="a0"><pre class="code"><span class="cm"># Node 22.12+, Docker, an Anthropic API key or a Claude subscription token</span>
+npm i @selfbuilding/core @selfbuilding/agents @selfbuilding/harnesses @selfbuilding/sandbox-docker zod
+npm i -D selfbuilding
+npx selfbuilding init --harness claude-code --provider docker --host node
+npx selfbuilding doctor            <span class="cm"># lists every missing credential or setting at once</span>
+npx selfbuilding run factories/review-pr.ts --input '{"url":"https://github.com/acme/api/pull/412"}'
+npx selfbuilding watch &lt;runId&gt;    <span class="cm"># live transcript</span>
+npx selfbuilding resume &lt;runId&gt;   <span class="cm"># after a crash or an edit</span></pre></div>
+
+<div class="pane" id="a1"><p class="filename">selfbuilding.config.ts</p><pre class="code"><span class="kw">import</span> { defineConfig, fileJournal, fromEnv } <span class="kw">from</span> <span class="str">"@selfbuilding/core"</span>;
+<span class="kw">import</span> { claudeCode } <span class="kw">from</span> <span class="str">"@selfbuilding/harnesses/claude-code"</span>;
+<span class="kw">import</span> { docker } <span class="kw">from</span> <span class="str">"@selfbuilding/sandbox-docker"</span>;
+
+<span class="kw">export default</span> <span class="fn">defineConfig</span>({
+  harness: <span class="fn">claudeCode</span>({
+    model: <span class="str">"&lt;anthropic-model-id&gt;"</span>,
+    <span class="cm">// subscription logins are first-class; API keys work too</span>
+    credentials: { kind: <span class="str">"oauth-token"</span>, value: <span class="fn">fromEnv</span>(<span class="str">"CLAUDE_CODE_OAUTH_TOKEN"</span>) },
+  }),
+  sandbox: <span class="fn">docker</span>(),                               <span class="cm">// required: no silent default</span>
+  journal: <span class="fn">fileJournal</span>(<span class="str">".selfbuilding/journal"</span>),     <span class="cm">// or sqliteJournal(...)</span>
+  budget: { usd: <span class="ty">20</span>, wallClock: <span class="str">"2h"</span> },
+  concurrency: { sandboxes: <span class="ty">4</span> },
+  skills: { sources: [{ root: <span class="str">".agents/skills"</span> }] }, <span class="cm">// default pack included</span>
+});</pre></div>
+
+<div class="pane" id="a2"><p class="filename">factories/review-pr.ts</p><pre class="code"><span class="kw">import</span> { factory } <span class="kw">from</span> <span class="str">"@selfbuilding/core"</span>;
+<span class="kw">import</span> { CodeReview } <span class="kw">from</span> <span class="str">"@selfbuilding/agents"</span>;
+<span class="kw">import</span> { z } <span class="kw">from</span> <span class="str">"zod"</span>;
+
+<span class="kw">export default</span> <span class="fn">factory</span>(
+  { name: <span class="str">"review-pr"</span>, input: z.<span class="fn">object</span>({ url: z.<span class="fn">url</span>() }) },
+  <span class="kw">async</span> ({ url }) =&gt; {
+    <span class="kw">const</span> review = <span class="kw">await</span> <span class="fn">CodeReview</span>({ target: { kind: <span class="str">"pr"</span>, url } });
+    <span class="kw">return</span> review.result;  <span class="cm">// { verdict: "approve" | "request_changes" | "comment", summary, findings[] }</span>
+  },
+);</pre></div>
+
+<div class="pane" id="a3"><pre class="code"><span class="kw">export const</span> ImplementReviewFix = <span class="fn">factory</span>(
+  { name: <span class="str">"implement-review-fix"</span>, input: z.<span class="fn">object</span>({ repo: z.<span class="fn">string</span>(), spec: z.<span class="fn">string</span>() }) },
+  <span class="kw">async</span> ({ repo, spec }) =&gt; {
+    <span class="kw">await using</span> box = <span class="fn">sandbox</span>({ provider: <span class="fn">impello</span>({ template: <span class="str">"selfbuilding-claude-code"</span> }), repo, label: <span class="str">"work"</span> });
+
+    <span class="fn">phase</span>(<span class="str">"implement"</span>);
+    <span class="kw">await</span> <span class="fn">ImplementSpec</span>({ spec }, { sandbox: box, label: <span class="str">"implement"</span> });   <span class="cm">// throws on failure</span>
+
+    <span class="kw">for</span> (<span class="kw">let</span> round = <span class="ty">0</span>; round &lt; <span class="ty">3</span>; round++) {
+      <span class="kw">const</span> tests  = <span class="kw">await</span> box.<span class="fn">exec</span>(<span class="str">"pnpm test"</span>, { timeout: <span class="str">"15m"</span> });
+      <span class="kw">const</span> branch = <span class="kw">await</span> box.<span class="fn">push</span>();                              <span class="cm">// selfbuilding/&lt;runId&gt;/work</span>
+
+      <span class="cm">// independent reviewer: fresh sandbox, different harness, sees only the branch</span>
+      <span class="kw">const</span> review = <span class="kw">await</span> CodeReview.<span class="fn">settled</span>(
+        { target: { kind: <span class="str">"diff"</span>, base: <span class="str">"main"</span>, head: branch.name } },
+        { repo, harness: <span class="fn">codex</span>({ model: <span class="str">"&lt;codex-model-id&gt;"</span> }), label: <span class="str">`review-${round}`</span> },
+      );
+      <span class="kw">if</span> (!review.ok) <span class="kw">break</span>;
+      <span class="kw">if</span> (review.value.result.verdict === <span class="str">"approve"</span> &amp;&amp; tests.exitCode === <span class="ty">0</span>) <span class="kw">break</span>;
+
+      <span class="kw">await</span> <span class="fn">agent</span>({                                                  <span class="cm">// inline agent, same shared tree</span>
+        name: <span class="str">"fix"</span>, prompt: <span class="str">"Address every finding. Keep the diff minimal. Run the tests."</span>,
+        input: { findings: review.value.result.findings },
+        output: z.<span class="fn">object</span>({ summary: z.<span class="fn">string</span>() }),
+        sandbox: box, label: <span class="str">`fix-${round}`</span>,
+      });
+    }
+    <span class="kw">return</span> { branch: (<span class="kw">await</span> box.<span class="fn">push</span>()).name };
+  },
+);</pre></div>
+
+<div class="pane" id="a4"><pre class="code"><span class="kw">export const</span> Triage20 = <span class="fn">factory</span>({ name: <span class="str">"triage-20"</span>, input: z.<span class="fn">object</span>({ repo: z.<span class="fn">string</span>() }) }, <span class="kw">async</span> ({ repo }) =&gt; {
+  <span class="kw">const</span> issues = <span class="kw">await</span> <span class="fn">step</span>(<span class="str">"list-issues"</span>, () =&gt; github.<span class="fn">listIssues</span>(repo, { label: <span class="str">"agent-ok"</span>, limit: <span class="ty">20</span> }));
+
+  <span class="kw">const</span> prs = <span class="kw">await</span> <span class="fn">pipeline</span>(
+    { key: (i) =&gt; <span class="str">`issue-${i.number}`</span> },
+    issues,
+    <span class="kw">async</span> (issue) =&gt; {                                                  <span class="cm">// stage 1: plan (cheap model)</span>
+      <span class="kw">const</span> p = <span class="kw">await</span> <span class="fn">PlanIssue</span>({ issue: issue.number }, { repo, harness: <span class="fn">claudeCode</span>({ model: CHEAP }) });
+      <span class="kw">return</span> p.result.feasible ? p : <span class="kw">null</span>;                            <span class="cm">// null drops the item</span>
+    },
+    (plan) =&gt; <span class="fn">ImplementSpec</span>({ spec: plan.result.spec }, { repo }),       <span class="cm">// stage 2: own fresh sandbox</span>
+    <span class="kw">async</span> (impl, { item }) =&gt; {                                         <span class="cm">// stage 3: review, then PR</span>
+      <span class="kw">const</span> r = <span class="kw">await</span> <span class="fn">CodeReview</span>({ target: { kind: <span class="str">"diff"</span>, base: <span class="str">"main"</span>, head: impl.artifacts.branch!.name } }, { repo });
+      <span class="kw">if</span> (r.result.verdict !== <span class="str">"approve"</span>) <span class="kw">return null</span>;
+      <span class="kw">return</span> <span class="fn">step</span>(<span class="str">`open-pr-${item.number}`</span>, () =&gt; github.<span class="fn">openPr</span>({ repo, head: impl.artifacts.branch!.name }));
+    },
+  );
+  <span class="kw">return</span> { prs: prs.<span class="fn">filter</span>(isPresent) };
+});</pre></div>
+
+<div class="pane" id="a5"><pre class="code"><span class="kw">export const</span> JudgePanel = <span class="fn">factory</span>({ name: <span class="str">"judge-panel"</span>, input: Z }, <span class="kw">async</span> ({ repo, branch }) =&gt; {
+  <span class="kw">await using</span> box = <span class="fn">sandbox</span>({ provider: <span class="fn">impello</span>({ template: <span class="str">"selfbuilding-claude-code"</span> }), repo, branch });
+  <span class="kw">await</span> box.<span class="fn">exec</span>(<span class="str">"pnpm install --frozen-lockfile &amp;&amp; pnpm build"</span>, { checkpoint: <span class="kw">true</span> });
+
+  <span class="kw">const</span> forks = <span class="kw">await</span> box.<span class="fn">fork</span>(<span class="ty">3</span>, { mode: <span class="str">"best"</span> });             <span class="cm">// 3 slots taken atomically</span>
+  <span class="kw">const</span> harnesses = [<span class="fn">claudeCode</span>({ model: A }), <span class="fn">codex</span>({ model: B }), <span class="fn">opencode</span>({ model: C })];
+  <span class="kw">const</span> verdicts = <span class="kw">await</span> <span class="fn">parallel</span>(forks.<span class="fn">map</span>((f, i) =&gt; () =&gt;
+    f ? <span class="fn">Judge</span>({ rubric: RUBRICS[i] }, { sandbox: f, harness: harnesses[i], label: <span class="str">`judge-${i}`</span> })
+      : Promise.<span class="fn">resolve</span>(<span class="kw">null</span>)));                                       <span class="cm">// failures → null</span>
+  <span class="kw">const</span> votes = verdicts.<span class="fn">filter</span>(isPresent);
+  <span class="kw">return</span> { pass: votes.length &gt;= <span class="ty">2</span> &amp;&amp; votes.<span class="fn">filter</span>(v =&gt; v.result.pass).length * <span class="ty">2</span> &gt; votes.length };
+});</pre></div>
+
+<div class="pane" id="a6"><pre class="code"><span class="cm">// Any SKILL.md folder becomes a typed function. The contract can live in a sidecar file or be passed here.</span>
+<span class="kw">import</span> { Agent } <span class="kw">from</span> <span class="str">"@selfbuilding/core"</span>;
+
+<span class="kw">export const</span> SecurityAudit = <span class="kw">await</span> Agent.<span class="fn">fromSkill</span>(<span class="kw">new</span> <span class="ty">URL</span>(<span class="str">"../.agents/skills/security-audit"</span>, <span class="kw">import</span>.meta.url), {
+  input:  z.<span class="fn">object</span>({ paths: z.<span class="fn">array</span>(z.<span class="fn">string</span>()).<span class="fn">default</span>([<span class="str">"src"</span>]) }),
+  output: z.<span class="fn">object</span>({
+    risk: z.<span class="fn">enum</span>([<span class="str">"low"</span>, <span class="str">"medium"</span>, <span class="str">"high"</span>]),
+    issues: z.<span class="fn">array</span>(z.<span class="fn">object</span>({ file: z.<span class="fn">string</span>(), line: z.<span class="fn">number</span>(), problem: z.<span class="fn">string</span>(), fix: z.<span class="fn">string</span>() })),
+  }),
+  done: [{ kind: <span class="str">"assert"</span>, check: (r) =&gt; r.issues.<span class="fn">every</span>(i =&gt; i.fix.length &gt; <span class="ty">0</span>) }],
+});
+
+<span class="kw">const</span> { result, artifacts, usage } = <span class="kw">await</span> <span class="fn">SecurityAudit</span>({ paths: [<span class="str">"apps/api"</span>] }, { repo: <span class="str">"acme/api"</span> });
+<span class="cm">// No contract at all? You get DefaultInput { task } → DefaultResult { summary, … }.
+// `npx selfbuilding skills build` generates typed wrappers for a whole folder of skills.</span></pre></div>
+
+<div class="pane" id="a7"><div class="grid g2"><div><p class="filename">selfbuilding.config.ts</p><pre class="code"><span class="kw">export default</span> <span class="fn">defineConfig</span>({
+  deployment: <span class="str">"prod"</span>,
+  harness: <span class="fn">claudeCode</span>({ model: M, credentials: … }),
+  sandbox: <span class="fn">impello</span>({
+    apiKey: <span class="fn">fromEnv</span>(<span class="str">"IMPELLO_API_KEY"</span>),
+    template: <span class="str">"selfbuilding-claude-code"</span>,
+  }),
+  artifacts: <span class="fn">s3Artifacts</span>({ bucket: <span class="str">"selfbuilding-artifacts"</span>, endpoint: <span class="fn">fromEnv</span>(<span class="str">"S3_ENDPOINT"</span>) }),
+  concurrency: { sandboxes: <span class="ty">8</span> },
+});</pre></div><div><p class="filename">trigger/selfbuilding.ts</p><pre class="code"><span class="kw">import</span> { createTriggerHost } <span class="kw">from</span> <span class="str">"@selfbuilding/host-trigger"</span>;
+<span class="kw">import</span> config <span class="kw">from</span> <span class="str">"../selfbuilding.config"</span>;
+<span class="kw">import</span> review <span class="kw">from</span> <span class="str">"../factories/review-pr"</span>;
+
+<span class="cm">// reaperTask runs reap() on a */2 cron</span>
+<span class="kw">export const</span> { factoryTask, agentTask, reaperTask } =
+  <span class="fn">createTriggerHost</span>({ config, factories: { review } });</pre>
+<p class="filename" style="margin-top:12px">anywhere in your backend</p><pre class="code"><span class="kw">await</span> tasks.<span class="fn">trigger</span>(<span class="str">"selfbuilding.factory"</span>, {
+  factory: <span class="str">"review"</span>, input: { url },
+});</pre></div></div>
+<p style="color:var(--mute);font-size:14px;margin-top:12px">The agent call runs as a child task: launch → wait (waitpoint) → collect, and accept runs in the parent. Trigger.dev has no inbound HTTP, so Slack, Discord and GitHub webhooks go to the <code>@selfbuilding/hooks</code> fetch handler on any edge runtime. AFK-only factories don't need it. Same shape for <code>createInngestHost()</code> and <code>createCfWorkflowsHost()</code>.</p></div>
+</div></section>
+
+<!-- ============ PACKAGES ============ -->
+<section id="packages"><div class="wrap">
+  <h2><small>05 · PACKAGES</small>What ships, and when</h2>
+  <p class="sub">All MIT, ESM-only, Node ≥ 22.12. Each family has one naming pattern. Public types never import third-party framework types. The plain <code>selfbuilding</code> package is the CLI only.</p>
+  <table>
+    <tr><th>Package</th><th>What it is</th><th>Milestone</th></tr>
+    <tr><td><code>@selfbuilding/core</code></td><td>Primitives, journal, budget, sandbox cap, events, error registry, all interfaces, the plain Node host</td><td>M0</td></tr>
+    <tr><td><code>@selfbuilding/skills</code> · <code>@selfbuilding/agents</code></td><td>SKILL.md loader + codegen · the default pack: CodeReview, ImplementSpec, Retro, ImproveCodebaseArchitecture</td><td>M1</td></tr>
+    <tr><td><code>@selfbuilding/harnesses/&lt;id&gt;</code></td><td>Command builders + stream parsers, no SDK dependencies. claude-code, codex, opencode (M1) · amp, droid, pi, grok (M4)</td><td>M1 / M4</td></tr>
+    <tr><td><code>@selfbuilding/runtime</code> · <code>@selfbuilding/images</code></td><td>In-sandbox runtime + <code>selfbuilding-mcp</code> as bundled files · image definitions per harness</td><td>M1</td></tr>
+    <tr><td><code>@selfbuilding/sandbox-&lt;id&gt;</code></td><td>docker (M0) · impello (M2) · e2b, daytona, vercel, modal, cloudflare (M3b)</td><td>M0–M3b</td></tr>
+    <tr><td><code>@selfbuilding/host-&lt;id&gt;</code></td><td>trigger (M2) · inngest (M3a) · cf-workflows (M3b)</td><td>M2–M3b</td></tr>
+    <tr><td><code>@selfbuilding/channel-&lt;id&gt;</code> · <code>@selfbuilding/hooks</code></td><td>slack, github (M3a) · discord (M3b) · webhook + callback fetch handlers</td><td>M3a–M3b</td></tr>
+    <tr><td><code>@selfbuilding/journal-sqlite</code> · <code>@selfbuilding/artifacts-s3</code> · <code>@selfbuilding/otel</code></td><td>Stores and telemetry sink</td><td>M2–M3</td></tr>
+    <tr><td><code>@selfbuilding/testing</code> · <code>@selfbuilding/sandbox-conformance</code> · <code>@selfbuilding/eslint-plugin</code></td><td>Scripted harness, emulate.dev setup, Discord fake · provider conformance suite · determinism lint rules</td><td>M0–M2</td></tr>
+    <tr><td><code>selfbuilding</code></td><td>CLI: init, doctor, run, resume, watch, cancel, answer, reap, skills, images</td><td>M1</td></tr>
+  </table>
+  <h3>Testing strategy</h3>
+  <div class="grid g4">
+    <div class="card"><h4>Scripted harness</h4><p>A fake harness that replays a script, for deterministic end-to-end runs with no model at all.</p></div>
+    <div class="card"><h4>Conformance</h4><p>Every provider runs the same suite, which includes injected 503s and timeouts. It runs on Docker locally and on real providers in CI.</p></div>
+    <div class="card"><h4>emulate.dev</h4><p>Local GitHub and Slack emulators for PR, check-run and button flows. Discord gets its own fake.</p></div>
+    <div class="card"><h4>Live smoke</h4><p>Nightly real-model runs on <b>your subscriptions</b>, capped, plus the factory reviewing its own PRs.</p></div>
+  </div>
+</div></section>
+
+<!-- ============ SAFETY ============ -->
+<section id="safety"><div class="wrap">
+  <h2><small>06 · FAILURE MODES</small>What breaks in production, and the mechanism that stops it</h2>
+  <p class="sub">Each of these is enforced in code and tested. None of them relies on a convention.</p>
+  <table>
+    <tr><th>Failure</th><th>What goes wrong</th><th>Mechanism</th></tr>
+    <tr><td><b>Leaked sandboxes</b></td><td>A sandbox keeps running and billing after its agent is gone, fills the concurrency cap, and then nothing new can start.</td><td>Intent is journaled before <code>create()</code>. Every sandbox has a finite lifetime and labels. <code>reap()</code> sweeps the provider's actual list on a cron. A refused pause is a typed outcome, never a throw.</td></tr>
+    <tr><td><b>An outage read as "not found"</b></td><td>A 5xx during lookup is treated as "no sandbox", so live work is rebuilt over or a message is dropped.</td><td><code>find()</code> returns null only for a genuine miss, and everything else throws <code>SandboxUnavailableError</code>. Only explicit kills and positive 404s destroy anything.</td></tr>
+    <tr><td><b>A lookup that wakes things</b></td><td>Checking a paused sandbox resumes it, which undoes every park.</td><td><code>find()</code> never wakes. Pause is done by id, never through a connected handle.</td></tr>
+    <tr><td><b>Ghost refs</b></td><td>A record says "paused" but the sandbox is gone, so every retry fails the same way forever.</td><td><code>openOrCreate</code> rebuilds from a checkpoint and converges on the new sandbox.</td></tr>
+    <tr><td><b>Double-run on retry</b></td><td>A host retry starts a second agent turn.</td><td>Launch is idempotent (it checks outcome records and markers) and fenced by <code>(callId, attempt)</code>. A late outcome is ignored.</td></tr>
+    <tr><td><b>Harness CLI drift</b></td><td>A new CLI version changes its stream format and parsing breaks silently.</td><td>The default version is <code>'tested'</code>, with pinned versions plus parser fixtures and a nightly probe per harness.</td></tr>
+    <tr><td><b>Secrets in snapshots</b></td><td>A key is baked into an image, snapshot or pushed branch.</td><td>Secrets arrive as 0600 files only. Snapshots and pushes are checked by an exact-value scan. The agent token is read-only.</td></tr>
+    <tr><td><b>Silent skips</b></td><td>One missing token quietly disables everything.</td><td>Errors are loud and named. <code>selfbuilding doctor</code> lists every missing setting at once.</td></tr>
+  </table>
+</div></section>
+
+<!-- ============ DECISIONS ============ -->
+<section id="decisions"><div class="wrap">
+  <h2><small>07 · DECISIONS</small>What's settled</h2>
+  <p class="sub"><span class="tag new">INTERVIEW</span> = decided by you in this session. <span class="tag acc">ACCEPTED</span> = the spec's recommendation, accepted as the decision for now. Any of them can be reopened.</p>
+  <table>
+    <tr><th></th><th>Decision</th><th>Detail</th></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Name & form</td><td><b>Selfbuilding</b>, a new, independent, MIT TypeScript project. Library first, with a thin optional control plane later.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>npm</td><td><code>@selfbuilding/*</code> packages (create the npm org) plus the plain <code>selfbuilding</code> CLI package. The name is free and the placeholder is ready to publish.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Reference deployment</td><td>Trigger.dev host + Impello sandboxes. Cloudflare Workers + Durable Objects for the later control plane.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Harnesses</td><td>Claude Code, Codex and OpenCode stable. Amp, Droid, Pi and Grok experimental, behind the same interface.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Providers</td><td>Docker, Impello/E2B, Daytona, Vercel Sandbox, Modal, Cloudflare Sandbox.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Skills</td><td>Any SKILL.md folder becomes an <code>Agent</code>. The default pack ships as defaults.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>HITL</td><td>Slack, Discord and GitHub PR comments, plus AFK runs.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Durability</td><td>Built-in journal-replay resume (file or SQLite). On durable hosts each agent call maps onto host steps, so there is one system.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Results & composition</td><td>Typed Zod results via <code>submit_result</code>. Plain-TS primitives: <code>agent</code>, <code>pipeline</code>, <code>parallel</code>, <code>step</code>, <code>phase</code>/<code>log</code>, budget, nesting one level deep.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Sandbox placement</td><td>Fresh by default. Shared handle when you opt in. Handoff via typed results, branches, <code>snapshot()</code>/<code>fork()</code>.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Subscription logins</td><td><b>First-class.</b> Documented and supported. The docs note that users are responsible for their plan's terms, and API keys are always shown as the alternative.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>PR authorship</td><td>Always the Selfbuilding GitHub App in v1. An "initiator" option comes later with the control plane.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Network access</td><td>Open by default, with a one-line allowlist preset (model APIs + package registries) documented for production.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Default sandbox</td><td>None. <code>sandbox</code> is required, and the error names <code>docker()</code> for local and <code>impello()</code> for cloud.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Live CI</td><td>Run on your own subscriptions instead of API spend. Expect the Codex auth lease to limit it to one concurrent sandbox per ChatGPT credential.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Dogfood</td><td>A new <code>selfbuilding-bot</code> GitHub App plus <code>#selfbuilding-factory</code> in the 21 Dreams Slack. You answer the asks.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Launch</td><td>Full v1 (about 20 weeks) before going public.</td></tr>
+    <tr><td><span class="tag new">INTERVIEW</span></td><td>Testing</td><td>emulate.dev for GitHub and Slack. A hand-rolled Discord fake.</td></tr>
+    <tr><td><span class="tag acc">ACCEPTED</span></td><td>Everything else</td><td>The other ~50 open questions take the spec's recommendation. Highlights: no telemetry in v1 · checkpoint mode <code>"git"</code> · kill failed sandboxes, or keep them 1h when not AFK · hot wait 10 min · harness version <code>'tested'</code> · no streaming run handle until v1.1 · Slack is "create your own app from this manifest" · Modal and Cloudflare Sandbox may ship experimental if M3b slips.</td></tr>
+  </table>
+</div></section>
+
+<!-- ============ ROADMAP ============ -->
+<section id="roadmap"><div class="wrap">
+  <h2><small>08 · ROADMAP</small>M0 → v1.0 in about 20 weeks</h2>
+  <p class="sub">Each milestone ends when its exit criteria pass in CI or a recorded run. The estimates assume one full-time maintainer plus agents.</p>
+  <div class="weeks"><span>wk 0</span><span>wk 2</span><span>wk 5</span><span>wk 9</span><span>wk 13</span><span>wk 17</span><span>wk 20</span></div>
+  <div class="road">
+    <div class="ms"><div class="id">M0</div><div class="wk">contracts · 2 wk</div><ul><li>Monorepo, core interfaces</li><li>File journal, Docker</li><li>Scripted harness</li><li>Conformance skeleton</li></ul></div>
+    <div class="ms"><div class="id">M1</div><div class="wk">one real agent · 3 wk</div><ul><li>Claude Code, Codex, OpenCode</li><li><code>submit_result</code> + runtime</li><li>Skill loader + default pack</li><li>CLI init / run / doctor</li></ul></div>
+    <div class="ms"><div class="id">M2</div><div class="wk">composition + durability · 4 wk</div><ul><li><code>pipeline</code> / <code>parallel</code> / budget</li><li>Shared handles, fork, snapshot</li><li>SQLite journal, resume</li><li>Impello + Trigger.dev</li><li>Dogfood: review-only</li></ul></div>
+    <div class="ms"><div class="id">M3a</div><div class="wk">humans · 4 wk</div><ul><li><code>ask()</code> hot + cold</li><li>AFK policies</li><li>Slack + GitHub channels</li><li>Inngest host</li><li>Dogfood: ImplementSpec from Slack</li></ul></div>
+    <div class="ms"><div class="id">M3b</div><div class="wk">breadth · 4 wk</div><ul><li>Discord</li><li>Cloudflare Workflows host</li><li>E2B, Daytona, Vercel, Modal, CF Sandbox</li></ul></div>
+    <div class="ms"><div class="id">M4</div><div class="wk">v1.0 · 3 wk</div><ul><li>Amp, Droid, Pi, Grok (exp.)</li><li>API freeze + semver</li><li>Generated references</li><li>Clean-machine quickstart</li><li><b>Public launch</b></li></ul></div>
+  </div>
+  <p style="color:var(--dim);font-size:13px">Later, with its own spec: the control plane on Cloudflare Workers + Durable Objects (run index, live transcript view, central HITL routing, hosted reaper).</p>
+  <h3>Before M0 starts</h3>
+  <div class="grid g3">
+    <div class="card"><h4>Claim the names</h4><p>Log in to npm, publish the <code>selfbuilding</code> placeholder, and create the <code>@selfbuilding</code> org.</p></div>
+    <div class="card"><h4>Set up the repo</h4><p>Run <code>git init</code>, and lay out the monorepo skeleton from §10.2.</p></div>
+    <div class="card"><h4>Create the dogfood identity</h4><p>Create the <code>selfbuilding-bot</code> GitHub App and <code>#selfbuilding-factory</code>. Secrets are authored in Infisical.</p></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">Selfbuilding v1 system design · draft 2026-11-01 · full detail in <a href="selfbuilding-v1-spec.md">selfbuilding-v1-spec.md</a> (11 sections, every interface and edge case).</div></footer>
+
+<script>
+document.querySelectorAll('.tabs').forEach(group => {
+  const tabs = group.querySelectorAll('.tab');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => { x.setAttribute('aria-selected', 'false'); document.getElementById(x.dataset.pane).classList.remove('on'); });
+    t.setAttribute('aria-selected', 'true');
+    document.getElementById(t.dataset.pane).classList.add('on');
+  }));
+});
+</script>
+</body>
+</html>

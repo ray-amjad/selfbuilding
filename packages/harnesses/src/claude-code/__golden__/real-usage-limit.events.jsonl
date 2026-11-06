@@ -1,0 +1,5 @@
+{"mcp":[{"name":"selfbuilding","status":"connected"}],"model":"claude-offline-test","sessionId":"<session:1>","tools":["Task","Bash","CronCreate","CronDelete","CronList","Edit","EnterWorktree","ExitWorktree","ListAgents","Monitor","NotebookEdit","Read","RemoteTrigger","ReportFindings","ScheduleWakeup","SendMessage","Skill","TaskStop","ToolSearch","WebFetch","WebSearch","Workflow","Write","mcp__selfbuilding__submit_result"],"type":"session.started"}
+{"message":"Subscription usage limit reached (five_hour); resets at <time>","type":"warning"}
+{"cachedInputTokens":0,"costUsd":"<usd>","cumulative":true,"inputTokens":0,"outputTokens":0,"type":"usage"}
+{"failure":{"code":"quota","message":"You've hit your 5-hour limit · resets Mar 17, 2030, 5:46pm (UTC)","retryable":false},"type":"error"}
+{"reason":"error","type":"turn.ended"}

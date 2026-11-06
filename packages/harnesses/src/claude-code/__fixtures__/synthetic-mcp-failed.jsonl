@@ -1,0 +1,3 @@
+{"type":"system","subtype":"init","cwd":"/selfbuilding/work","session_id":"8c3d4e5f-6a7b-5c8d-9e0f-1a2b3c4d5e6f","tools":["Bash"],"mcp_servers":[{"name":"selfbuilding","status":"failed"}],"model":"claude-test","permissionMode":"bypassPermissions"}
+{"type":"assistant","message":{"id":"m","model":"claude-test","role":"assistant","type":"message","content":[{"type":"text","text":"I cannot find a submit tool."}]},"parent_tool_use_id":null,"session_id":"8c3d4e5f-6a7b-5c8d-9e0f-1a2b3c4d5e6f"}
+{"type":"result","subtype":"success","is_error":false,"result":"I cannot find a submit tool.","session_id":"8c3d4e5f-6a7b-5c8d-9e0f-1a2b3c4d5e6f","total_cost_usd":0.01,"usage":{"input_tokens":50,"output_tokens":10,"cache_read_input_tokens":0,"cache_creation_input_tokens":0}}

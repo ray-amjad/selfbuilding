@@ -1,0 +1,46 @@
+{
+  "name": "@selfbuilding/artifacts-s3",
+  "version": "0.1.0",
+  "description": "An S3-compatible ArtifactStore (Cloudflare R2, AWS S3) with signed read URLs.",
+  "license": "MIT",
+  "author": "Ray Amjad",
+  "keywords": [
+    "selfbuilding",
+    "artifacts",
+    "s3",
+    "r2"
+  ],
+  "homepage": "https://github.com/ray-amjad/selfbuilding/tree/main/packages/artifacts-s3#readme",
+  "bugs": "https://github.com/ray-amjad/selfbuilding/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-amjad/selfbuilding.git",
+    "directory": "packages/artifacts-s3"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup && tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@selfbuilding/core": "workspace:*",
+    "aws4fetch": "^1.0.20"
+  }
+}

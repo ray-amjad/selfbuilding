@@ -1,0 +1,79 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`toStandaloneDockerfile (release-prep §4.1) > matches the snapshot for all-harnesses 1`] = `
+"# Generated from @selfbuilding/images (standalone: one FROM, no ARG). Do not edit by hand.
+FROM node:22-bookworm-slim
+USER root
+SHELL ["/bin/sh", "-euc"]
+ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8
+RUN apt-get update \\
+  && apt-get install -y --no-install-recommends ca-certificates curl gnupg git jq ripgrep build-essential unzip python3 procps coreutils \\
+  && install -d -m 0755 /etc/apt/keyrings \\
+  && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \\
+  && chmod 0644 /etc/apt/keyrings/githubcli-archive-keyring.gpg \\
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list \\
+  && apt-get update \\
+  && apt-get install -y --no-install-recommends gh \\
+  && rm -rf /var/lib/apt/lists/*
+RUN npm --userconfig=/dev/null --ignore-scripts=false install --global --prefix /usr/local pnpm@12.16.1 bun@1.4.4
+RUN userdel --remove node 2>/dev/null || true \\
+  && { getent group "1000" >/dev/null || groupadd --gid "1000" agent; } \\
+  && useradd --uid "1000" --gid "1000" --create-home --home-dir /home/agent --shell /bin/bash agent
+RUN sh -euc "$(echo bWtkaXIgLXAgL3NlbGZidWlsZGluZy9iaW4gL3NlbGZidWlsZGluZy9za2lsbHMgL3NlbGZidWlsZGluZy9jb250cmFjdCAvc2VsZmJ1aWxkaW5nL2luIC9zZWxmYnVpbGRpbmcvc3RhdGUvbGF1bmNoZXMgL3NlbGZidWlsZGluZy9zdGF0ZS9jYWxscyAvc2VsZmJ1aWxkaW5nL3N0YXRlL2xvZ3MgL3J1bi9zZWxmYnVpbGRpbmcvc2VjcmV0cyAvb3B0L3NlbGZidWlsZGluZyAvc2VsZmJ1aWxkaW5nL3dvcmsgL3NlbGZidWlsZGluZy9ob21lIC9zZWxmYnVpbGRpbmcvb3V0IC9zZWxmYnVpbGRpbmcvc3RhdGUvcHJvYyAmJiBjaG93biBhZ2VudDphZ2VudCAvc2VsZmJ1aWxkaW5nL3dvcmsgL3NlbGZidWlsZGluZy9ob21lIC9zZWxmYnVpbGRpbmcvb3V0IC9zZWxmYnVpbGRpbmcvc3RhdGUvcHJvYyAmJiBwcmludGYgJyMhL2Jpbi9zaFxuZXhlYyBub2RlIC9zZWxmYnVpbGRpbmcvYmluL3NlbGZidWlsZGluZy1tY3AubWpzICIkQCJcbicgPiAvdXNyL2xvY2FsL2Jpbi9zZWxmYnVpbGRpbmctbWNwICYmIGNobW9kIDA3NTUgL3Vzci9sb2NhbC9iaW4vc2VsZmJ1aWxkaW5nLW1jcA== | base64 -d)"
+RUN node --version && git --version && gh --version && timeout --version >/dev/null
+ENV DISABLE_AUTOUPDATER=1
+RUN npm --userconfig=/dev/null --ignore-scripts=false install --global --prefix /usr/local @anthropic-ai/claude-code@2.1.316
+RUN npm --userconfig=/dev/null --ignore-scripts=false install --global --prefix /usr/local @openai/codex@0.166.0
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/selfbuilding/browsers NODE_PATH=/usr/local/lib/node_modules
+RUN apt-get update \\
+  && apt-get install -y --no-install-recommends sqlite3 \\
+  && npm --userconfig=/dev/null --ignore-scripts=false install --global --prefix /usr/local playwright@1.64.1 @playwright/mcp@0.0.83 \\
+  && /usr/local/bin/playwright install --with-deps chromium \\
+  && node /usr/local/lib/node_modules/@playwright/mcp/node_modules/playwright-core/cli.js install chromium \\
+  && rm -rf /var/lib/apt/lists/* \\
+  && chmod -R a+rX /opt/selfbuilding/browsers
+RUN sh -euc "$(echo cm0gLWYgL3Vzci9sb2NhbC9iaW4vcGxheXdyaWdodC1tY3AgJiYgcHJpbnRmICcjIS9iaW4vc2hcbjogIiR7UExBWVdSSUdIVF9CUk9XU0VSU19QQVRIOj0vb3B0L3NlbGZidWlsZGluZy9icm93c2Vyc30iXG5leHBvcnQgUExBWVdSSUdIVF9CUk9XU0VSU19QQVRIXG5leGVjIG5vZGUgL3Vzci9sb2NhbC9saWIvbm9kZV9tb2R1bGVzL0BwbGF5d3JpZ2h0L21jcC9jbGkuanMgIiRAIlxuJyA+IC91c3IvbG9jYWwvYmluL3BsYXl3cmlnaHQtbWNwICYmIGNobW9kIDA3NTUgL3Vzci9sb2NhbC9iaW4vcGxheXdyaWdodC1tY3AgJiYgbWtkaXIgLXAgL3NlbGZidWlsZGluZy9ub2RlX21vZHVsZXMgJiYgbG4gLXNmbiAvdXNyL2xvY2FsL2xpYi9ub2RlX21vZHVsZXMvcGxheXdyaWdodCAvc2VsZmJ1aWxkaW5nL25vZGVfbW9kdWxlcy9wbGF5d3JpZ2h0ICYmIG1rZGlyIC1wIC9zZWxmYnVpbGRpbmcvaG9tZS8uY2FjaGUvbXMtcGxheXdyaWdodCAmJiBjcCAtYXMgL29wdC9zZWxmYnVpbGRpbmcvYnJvd3NlcnMvLiAvc2VsZmJ1aWxkaW5nL2hvbWUvLmNhY2hlL21zLXBsYXl3cmlnaHQvICYmIGNob3duIC1SIC1oIGFnZW50OmFnZW50IC9zZWxmYnVpbGRpbmcvaG9tZS8uY2FjaGUgJiYgbWtkaXIgLXAgL2hvbWUvYWdlbnQvLmNhY2hlL21zLXBsYXl3cmlnaHQgJiYgY3AgLWFzIC9vcHQvc2VsZmJ1aWxkaW5nL2Jyb3dzZXJzLy4gL2hvbWUvYWdlbnQvLmNhY2hlL21zLXBsYXl3cmlnaHQvICYmIGNob3duIC1SIC1oIGFnZW50OmFnZW50IC9ob21lL2FnZW50Ly5jYWNoZQ== | base64 -d)"
+RUN sh -euc "$(echo bWtkaXIgLXAgL29wdC9zZWxmYnVpbGRpbmcgJiYgcHJpbnRmICclc1xuJyAneyJpbWFnZSI6InNlbGZidWlsZGluZy1hbGwtaGFybmVzc2VzIiwidmVyc2lvbiI6IjAuMS4wIiwidXNlciI6ImFnZW50IiwiYmluYXJpZXMiOlsiL3Vzci9sb2NhbC9iaW4vY2xhdWRlIiwiL3Vzci9sb2NhbC9iaW4vY29kZXgiXSwiYnJvd3NlciI6eyJlbmdpbmUiOiJjaHJvbWl1bSIsInBsYXl3cmlnaHQiOiIxLjY0LjEiLCJtY3AiOiIvdXNyL2xvY2FsL2Jpbi9wbGF5d3JpZ2h0LW1jcCIsImJyb3dzZXJzUGF0aCI6Ii9vcHQvc2VsZmJ1aWxkaW5nL2Jyb3dzZXJzIn19JyA+IC9vcHQvc2VsZmJ1aWxkaW5nL2ltYWdlLW1hbmlmZXN0Lmpzb24= | base64 -d)"
+RUN /usr/local/bin/claude --version && /usr/local/bin/codex --version && /usr/local/bin/playwright-mcp --version && cd /selfbuilding/out && runuser -u agent -- env -i HOME=/selfbuilding/home PATH=/usr/local/bin:/usr/bin:/bin node -e "require('playwright')" && runuser -u agent -- env -i HOME=/selfbuilding/home PATH=/usr/local/bin:/usr/bin:/bin node --input-type=module -e "const { chromium } = await import('playwright'); const b = await chromium.launch({ args: ['--no-sandbox'] }); await b.close();" && runuser -u agent -- env -i HOME=/selfbuilding/home PATH=/usr/local/bin:/usr/bin:/bin node -e "require('/usr/local/lib/node_modules/@playwright/mcp/node_modules/playwright-core').chromium.launch({ args: ['--no-sandbox'] }).then((b) => b.close()).catch((e) => { console.error(e); process.exit(1); });"
+WORKDIR /selfbuilding/work
+LABEL org.opencontainers.image.title="selfbuilding-all-harnesses"
+"
+`;
+
+exports[`toStandaloneDockerfile (release-prep §4.1) > matches the snapshot for codex 1`] = `
+"# Generated from @selfbuilding/images (standalone: one FROM, no ARG). Do not edit by hand.
+FROM node:22-bookworm-slim
+USER root
+SHELL ["/bin/sh", "-euc"]
+ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8
+RUN apt-get update \\
+  && apt-get install -y --no-install-recommends ca-certificates curl gnupg git jq ripgrep build-essential unzip python3 procps coreutils \\
+  && install -d -m 0755 /etc/apt/keyrings \\
+  && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \\
+  && chmod 0644 /etc/apt/keyrings/githubcli-archive-keyring.gpg \\
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list \\
+  && apt-get update \\
+  && apt-get install -y --no-install-recommends gh \\
+  && rm -rf /var/lib/apt/lists/*
+RUN npm --userconfig=/dev/null --ignore-scripts=false install --global --prefix /usr/local pnpm@12.16.1 bun@1.4.4
+RUN userdel --remove node 2>/dev/null || true \\
+  && { getent group "1000" >/dev/null || groupadd --gid "1000" agent; } \\
+  && useradd --uid "1000" --gid "1000" --create-home --home-dir /home/agent --shell /bin/bash agent
+RUN sh -euc "$(echo bWtkaXIgLXAgL3NlbGZidWlsZGluZy9iaW4gL3NlbGZidWlsZGluZy9za2lsbHMgL3NlbGZidWlsZGluZy9jb250cmFjdCAvc2VsZmJ1aWxkaW5nL2luIC9zZWxmYnVpbGRpbmcvc3RhdGUvbGF1bmNoZXMgL3NlbGZidWlsZGluZy9zdGF0ZS9jYWxscyAvc2VsZmJ1aWxkaW5nL3N0YXRlL2xvZ3MgL3J1bi9zZWxmYnVpbGRpbmcvc2VjcmV0cyAvb3B0L3NlbGZidWlsZGluZyAvc2VsZmJ1aWxkaW5nL3dvcmsgL3NlbGZidWlsZGluZy9ob21lIC9zZWxmYnVpbGRpbmcvb3V0IC9zZWxmYnVpbGRpbmcvc3RhdGUvcHJvYyAmJiBjaG93biBhZ2VudDphZ2VudCAvc2VsZmJ1aWxkaW5nL3dvcmsgL3NlbGZidWlsZGluZy9ob21lIC9zZWxmYnVpbGRpbmcvb3V0IC9zZWxmYnVpbGRpbmcvc3RhdGUvcHJvYyAmJiBwcmludGYgJyMhL2Jpbi9zaFxuZXhlYyBub2RlIC9zZWxmYnVpbGRpbmcvYmluL3NlbGZidWlsZGluZy1tY3AubWpzICIkQCJcbicgPiAvdXNyL2xvY2FsL2Jpbi9zZWxmYnVpbGRpbmctbWNwICYmIGNobW9kIDA3NTUgL3Vzci9sb2NhbC9iaW4vc2VsZmJ1aWxkaW5nLW1jcA== | base64 -d)"
+RUN node --version && git --version && gh --version && timeout --version >/dev/null
+RUN npm --userconfig=/dev/null --ignore-scripts=false install --global --prefix /usr/local @openai/codex@0.166.0
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/selfbuilding/browsers NODE_PATH=/usr/local/lib/node_modules
+RUN apt-get update \\
+  && apt-get install -y --no-install-recommends sqlite3 \\
+  && npm --userconfig=/dev/null --ignore-scripts=false install --global --prefix /usr/local playwright@1.64.1 @playwright/mcp@0.0.83 \\
+  && /usr/local/bin/playwright install --with-deps chromium \\
+  && node /usr/local/lib/node_modules/@playwright/mcp/node_modules/playwright-core/cli.js install chromium \\
+  && rm -rf /var/lib/apt/lists/* \\
+  && chmod -R a+rX /opt/selfbuilding/browsers
+RUN sh -euc "$(echo cm0gLWYgL3Vzci9sb2NhbC9iaW4vcGxheXdyaWdodC1tY3AgJiYgcHJpbnRmICcjIS9iaW4vc2hcbjogIiR7UExBWVdSSUdIVF9CUk9XU0VSU19QQVRIOj0vb3B0L3NlbGZidWlsZGluZy9icm93c2Vyc30iXG5leHBvcnQgUExBWVdSSUdIVF9CUk9XU0VSU19QQVRIXG5leGVjIG5vZGUgL3Vzci9sb2NhbC9saWIvbm9kZV9tb2R1bGVzL0BwbGF5d3JpZ2h0L21jcC9jbGkuanMgIiRAIlxuJyA+IC91c3IvbG9jYWwvYmluL3BsYXl3cmlnaHQtbWNwICYmIGNobW9kIDA3NTUgL3Vzci9sb2NhbC9iaW4vcGxheXdyaWdodC1tY3AgJiYgbWtkaXIgLXAgL3NlbGZidWlsZGluZy9ub2RlX21vZHVsZXMgJiYgbG4gLXNmbiAvdXNyL2xvY2FsL2xpYi9ub2RlX21vZHVsZXMvcGxheXdyaWdodCAvc2VsZmJ1aWxkaW5nL25vZGVfbW9kdWxlcy9wbGF5d3JpZ2h0ICYmIG1rZGlyIC1wIC9zZWxmYnVpbGRpbmcvaG9tZS8uY2FjaGUvbXMtcGxheXdyaWdodCAmJiBjcCAtYXMgL29wdC9zZWxmYnVpbGRpbmcvYnJvd3NlcnMvLiAvc2VsZmJ1aWxkaW5nL2hvbWUvLmNhY2hlL21zLXBsYXl3cmlnaHQvICYmIGNob3duIC1SIC1oIGFnZW50OmFnZW50IC9zZWxmYnVpbGRpbmcvaG9tZS8uY2FjaGUgJiYgbWtkaXIgLXAgL2hvbWUvYWdlbnQvLmNhY2hlL21zLXBsYXl3cmlnaHQgJiYgY3AgLWFzIC9vcHQvc2VsZmJ1aWxkaW5nL2Jyb3dzZXJzLy4gL2hvbWUvYWdlbnQvLmNhY2hlL21zLXBsYXl3cmlnaHQvICYmIGNob3duIC1SIC1oIGFnZW50OmFnZW50IC9ob21lL2FnZW50Ly5jYWNoZQ== | base64 -d)"
+RUN sh -euc "$(echo bWtkaXIgLXAgL29wdC9zZWxmYnVpbGRpbmcgJiYgcHJpbnRmICclc1xuJyAneyJpbWFnZSI6InNlbGZidWlsZGluZy1jb2RleCIsInZlcnNpb24iOiIwLjEuMCIsInVzZXIiOiJhZ2VudCIsImJpbmFyaWVzIjpbIi91c3IvbG9jYWwvYmluL2NvZGV4Il0sImJyb3dzZXIiOnsiZW5naW5lIjoiY2hyb21pdW0iLCJwbGF5d3JpZ2h0IjoiMS42NC4xIiwibWNwIjoiL3Vzci9sb2NhbC9iaW4vcGxheXdyaWdodC1tY3AiLCJicm93c2Vyc1BhdGgiOiIvb3B0L3NlbGZidWlsZGluZy9icm93c2VycyJ9fScgPiAvb3B0L3NlbGZidWlsZGluZy9pbWFnZS1tYW5pZmVzdC5qc29u | base64 -d)"
+RUN /usr/local/bin/codex --version && /usr/local/bin/playwright-mcp --version && cd /selfbuilding/out && runuser -u agent -- env -i HOME=/selfbuilding/home PATH=/usr/local/bin:/usr/bin:/bin node -e "require('playwright')" && runuser -u agent -- env -i HOME=/selfbuilding/home PATH=/usr/local/bin:/usr/bin:/bin node --input-type=module -e "const { chromium } = await import('playwright'); const b = await chromium.launch({ args: ['--no-sandbox'] }); await b.close();" && runuser -u agent -- env -i HOME=/selfbuilding/home PATH=/usr/local/bin:/usr/bin:/bin node -e "require('/usr/local/lib/node_modules/@playwright/mcp/node_modules/playwright-core').chromium.launch({ args: ['--no-sandbox'] }).then((b) => b.close()).catch((e) => { console.error(e); process.exit(1); });"
+WORKDIR /selfbuilding/work
+LABEL org.opencontainers.image.title="selfbuilding-codex"
+"
+`;

@@ -1,0 +1,4 @@
+{"mcp":[],"model":"claude-opus-5-5","sessionId":"<session:1>","tools":["Task","Bash","Edit","Glob","Grep","NotebookEdit","Read","Skill","TodoWrite","ToolSearch","WebFetch","WebSearch","Write"],"type":"session.started"}
+{"cachedInputTokens":0,"costUsd":"<usd>","cumulative":true,"inputTokens":0,"outputTokens":0,"type":"usage"}
+{"failure":{"code":"auth","message":"Not logged in · Please run /login","retryable":false},"type":"error"}
+{"reason":"error","type":"turn.ended"}
